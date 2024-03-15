@@ -1,21 +1,38 @@
-import React, {useState } from 'react'
+import React, {useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { deleteCartItemReducer, minusCartItemReducer, updateCartItemReducer } from '../../functionSlice';
+
 
 export default function Cart() {
   const date = new Date();
   const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
   const formattedDate = date.toLocaleDateString('en-US', options);
 
-  const [content, setContent] = useState(10);
-
+  const [discount, setDiscount] = useState(0);
+  const [discountPrice,setDiscountPrice] = useState(0);
+  const [payment,setPayment] = useState("");
+  const [reciept,setReceipt] = useState({});
   const handleInput = (e) => {
-    console.log(e.target.textContent);
-    setContent(e.target.textContent);
+    if (e.target.value <0) {
+        setDiscount(0);
+    }else if(e.target.value > 100){
+        setDiscount(100);
+    }else{
+    setDiscount(e.target.value);
+    }
   };
 
   const cart = useSelector((state)=>state.function.cart);
   const dispatch = useDispatch();
+
+  const [subTotal, setSubTotal]= useState(0);
+  const [total,setTotal] = useState(0);
+  useEffect(()=>{
+    setSubTotal((cart.reduce((a,cartItem)=>a + cartItem.total,0)).toFixed(2));
+    setTotal((subTotal*(100-discount)/100).toFixed(2));
+    setDiscountPrice((subTotal*(discount)/100).toFixed(2))
+  },[discount,cart,subTotal,total,discountPrice])
+
   const handleDelete = (e,item)=>{
     e.preventDefault();
     dispatch(deleteCartItemReducer({id:item.id}))
@@ -29,6 +46,19 @@ export default function Cart() {
   const minusQty = (e,item)=>{
     e.preventDefault();
     dispatch(minusCartItemReducer({id:item.id,qty:1}));
+  }
+
+
+ 
+  const createReciept = (e)=>{
+    e.preventDefault()
+    
+  }
+
+  const handleSubmit = (e)=>{
+    e.preventDefault();
+    setReceipt({id:Date.now(),cart:cart,discount:discount,subTotal:subTotal,total:total,createdDate:Date.now()})
+    console.log({id:Date.now(),cart:cart,discount:discount,subTotal:subTotal,total:total,createdDate:Date.now()});
   }
 
   return (
@@ -70,58 +100,53 @@ export default function Cart() {
                             <button onClick={(e)=>updateQty(e,item)} className=' w-6 h-6 rounded-lg bg-gray-300 text-white flex justify-center items-center'>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M11 13H5v-2h6V5h2v6h6v2h-6v6h-2z"/></svg>
                             </button>
-                            <p className='text-sm font-medium pl-3'>USD ${(item.qty * item.item.price).toFixed(2)}</p>
+                            <p className='text-sm font-medium pl-3'>USD ${(item.total).toFixed(2)}</p>
                         </div>
                     )):
                     <p className='text-xs font-bold'>No Added Item !!</p>
                 }
-                {/* <div className='flex gap-3 items-center'>
-                    <img src="/logo.jpg" className='w-12 h-12 rounded-lg'  alt="" />
-                    <p className='w-24 truncate text-xs font-medium'> Hanuman Beer With</p>
-                    <div className=' w-6 h-6 rounded-lg bg-gray-300 text-white flex justify-center items-center'>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M19 12.998H5v-2h14z"/></svg>
-                    </div>
-                    <p>120</p>
-                    <div className=' w-6 h-6 rounded-lg bg-gray-300 text-white flex justify-center items-center'>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M11 13H5v-2h6V5h2v6h6v2h-6v6h-2z"/></svg>
-                    </div>
-                    <p className='text-sm font-medium'>USD $120.00</p>
-                </div> */}
             </div>
         </section>
         <section className='mt-12 flex flex-col gap-3'>
             <div className='flex justify-between'>
                 <p className='text-xs font-medium text-gray-500'>Subtotal</p>
-                <p className='text-sm font-medium text-gray-500'>USD $360.00</p>
+                <p className='text-sm font-medium text-gray-500'>USD ${subTotal}</p>
             </div>
             <div className='flex justify-between'>
                 <p className='text-xs font-medium text-gray-500'>Discount</p>
-                <div className='flex'>
-                <p className='text-sm font-medium text-gray-500' onInput={handleInput}>{content}</p>
+                <div className='flex items-center'>
+                <input type="text" onChange={handleInput} value={discount} className='focus:ring-0 focus:border-none focus:outline-none w-6 text-sm text-end pr-1 font-medium text-gray-500' />
                 <span className='text-sm font-medium text-gray-500'>%</span>
                 </div>
             </div>
+            {
+                discount > 0 && 
+                <div className='flex justify-between'>
+                <p className='text-xs font-medium text-gray-400'>Discount Price</p>
+                <p className='text-sm font-medium text-gray-400'>USD ${discountPrice}</p>
+            </div>
+            }
             <div className='flex justify-between'>
                 <p className='text-sm font-medium text-black'>TOTAL</p>
-                <p className='text-sm font-medium text-black'>USD $333.00</p>
+                <p className='text-sm font-medium text-black'>USD ${total}</p>
             </div>
         </section>
         <section className='my-6 flex flex-col gap-3'>
             <p className='text-lg font-bold'>Payment Method </p>
             <div className='flex gap-6'>
-                <button className='rounded-lg border-2 border-yellow-700 w-24 h-14 flex flex-col justify-center items-center text-yellow-700'>
+                <button onClick={(e)=>setPayment("cash")}  className={payment == "cash" ?'rounded-lg bg-gray-200 border-2 border-yellow-700 w-24 h-14 flex flex-col justify-center items-center text-yellow-700' :'rounded-lg border-2 border-yellow-700 w-24 h-14 flex flex-col justify-center items-center text-yellow-700'}>
                     <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"><path d="M9 12a3 3 0 1 0 6 0a3 3 0 1 0-6 0"/><path d="M3 8a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2zm15 4h.01M6 12h.01"/></g></svg>
                     <p className='text-xs font-medium'>Cash</p>
                 </button>
-                <button className='rounded-lg border-2 border-yellow-700 w-24 h-14 flex flex-col justify-center items-center text-yellow-700'>
+                <button onClick={(e)=>setPayment("debit")} className={payment == "debit" ?'rounded-lg bg-gray-200 border-2 border-yellow-700 w-24 h-14 flex flex-col justify-center items-center text-yellow-700' :'rounded-lg border-2 border-yellow-700 w-24 h-14 flex flex-col justify-center items-center text-yellow-700'}>
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="32" viewBox="0 0 14 14"><g fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"><rect width="13" height="9.5" x=".5" y="2.25" rx="1"/><path d="M.5 5.75h13m-4 3.5H11"/></g></svg>
                     <p className='text-xs font-medium'>Debit</p>
                 </button>
             </div>
         </section>
         <section className='flex flex-col gap-3'>
-            <button  className='w-full font-bold border-2 border-yellow-700 text-yellow-700 rounded-lg py-2 '>Reciept</button>
-            <button  className='w-full font-bold text-white bg-yellow-700 rounded-lg py-2'>Submit</button>
+            <button disabled={cart.length == 0} onClick={createReciept}  className='w-full font-bold border-2 border-yellow-700 text-yellow-700 rounded-lg py-2 '>Reciept</button>
+            <button disabled={cart.length == 0} onClick={handleSubmit}  className='w-full font-bold text-white bg-yellow-700 rounded-lg py-2'>Submit</button>
         </section>
     </div>
   )
