@@ -1,10 +1,10 @@
 import React, { useState } from 'react'
 import Navbar from '../Components/Navbar'
-import Slidebar from '../Components/Slidebar'
 import Cart from '../Components/Cart'
 import products from '../products';
 import { useDispatch, useSelector } from 'react-redux';
 import { addToCartReducer } from '../../functionSlice';
+import Sidebar from '../Components/Sidebar';
 
 export default function Home() {
   const [data,setData] = useState(products);
@@ -18,9 +18,9 @@ export default function Home() {
   }
   return (
     <div>
-        <Navbar />
+        <Navbar  />
         <div className='flex justify-between'>
-          <Slidebar />
+          <Sidebar route={"/"} />
           <div className='w-full p-3 gap-6 flex flex-wrap justify-center h-fit'>
             {
               data.map((item,i)=>(

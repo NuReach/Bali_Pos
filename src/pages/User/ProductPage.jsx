@@ -1,7 +1,12 @@
 import React from 'react'
+import Navbar from '../Components/Navbar'
+import Sidebar from '../Components/Sidebar'
 
 export default function ProductPage() {
   return (
-    <div>ProductPage</div>
+    <div>
+      <Navbar />
+      <Sidebar route={"/product"} />
+    </div>
   )
 }
