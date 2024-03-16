@@ -1,6 +1,7 @@
 import React, {useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { deleteCartItemReducer, minusCartItemReducer, updateCartItemReducer } from '../../functionSlice';
+import { useNavigate } from 'react-router-dom';
 
 
 export default function Cart() {
@@ -12,6 +13,9 @@ export default function Cart() {
   const [discountPrice,setDiscountPrice] = useState(0);
   const [payment,setPayment] = useState("");
   const [reciept,setReceipt] = useState({});
+
+  const navigate = useNavigate();
+
   const handleInput = (e) => {
     if (e.target.value <0) {
         setDiscount(0);
@@ -49,16 +53,22 @@ export default function Cart() {
   }
 
 
- 
-  const createReciept = (e)=>{
-    e.preventDefault()
-    
-  }
-
   const handleSubmit = (e)=>{
     e.preventDefault();
     setReceipt({id:Date.now(),cart:cart,discount:discount,subTotal:subTotal,total:total,createdDate:Date.now()})
-    console.log({id:Date.now(),cart:cart,discount:discount,subTotal:subTotal,total:total,createdDate:Date.now()});
+    console.log({id:Date.now(),cart:cart,payment:payment,discount:discount,subTotal:subTotal,total:total,createdDate:Date.now()});
+    const dataToStore = {
+        id: Date.now(),
+        cart: cart,
+        discount: discount,
+        subTotal: subTotal,
+        payment:payment,
+        total: total,
+        user:"Hong Nnurech",
+        createdDate: Date.now()
+      };
+      localStorage.setItem('printData', JSON.stringify(dataToStore));
+      navigate("/receipt");
   }
 
   return (
@@ -145,7 +155,7 @@ export default function Cart() {
             </div>
         </section>
         <section className='flex flex-col gap-3'>
-            <button disabled={cart.length == 0} onClick={createReciept}  className='w-full font-bold border-2 border-yellow-700 text-yellow-700 rounded-lg py-2 '>Reciept</button>
+            {/* <button disabled={cart.length == 0} onClick={createReciept}  className='w-full font-bold border-2 border-yellow-700 text-yellow-700 rounded-lg py-2 '>Reciept</button> */}
             <button disabled={cart.length == 0} onClick={handleSubmit}  className='w-full font-bold text-white bg-yellow-700 rounded-lg py-2'>Submit</button>
         </section>
     </div>

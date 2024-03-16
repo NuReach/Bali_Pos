@@ -28,8 +28,8 @@ export default function Home() {
                   <img src={item.image} className='w-20 h-full rounded-lg object-cover' alt="" />
                   <div>
                     <p className='font-medium text-sm truncate'>{item.name}</p>
+                    <p className='font-medium text-xs text-gray-400 truncate'>{item.description}</p>
                     <p className='font-medium text-sm text-yellow-700 truncate'>USD ${item.price}</p>
-                    <p className='font-medium text-xs text-gray-400 truncate'>Stock : {item.stock}</p>
                     
                   </div>
                 </div>
