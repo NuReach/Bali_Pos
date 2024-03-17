@@ -9,14 +9,14 @@ export default function Sidebar({route}) {
         icon : '<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M22 13c0 1.11-.89 2-2 2H4a2 2 0 1 1 0-4h9l2.5 2l2.5-2h2a2 2 0 0 1 2 2M12 3C3 3 3 9 3 9h18s0-6-9-6M3 18c0 1.66 1.34 3 3 3h12c1.66 0 3-1.34 3-3v-1H3z"/></svg>',
     },
     {
-        title : "Dashboard",
-        link : "/dashboard",
-        icon : '<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M5 21q-.825 0-1.412-.587T3 19V5q0-.825.588-1.412T5 3h6v18zm8 0v-9h8v7q0 .825-.587 1.413T19 21zm0-11V3h6q.825 0 1.413.588T21 5v5z"/></svg>',
-    },
-    {
         title : "Product",
         link : "/product",
         icon : '<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="4"><path d="M44 14L24 4L4 14v20l20 10l20-10z"/><path stroke-linecap="round" d="m4 14l20 10m0 20V24m20-10L24 24M34 9L14 19"/></g></svg>',
+    },
+    {
+        title : "Dashboard",
+        link : "/dashboard",
+        icon : '<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M5 21q-.825 0-1.412-.587T3 19V5q0-.825.588-1.412T5 3h6v18zm8 0v-9h8v7q0 .825-.587 1.413T19 21zm0-11V3h6q.825 0 1.413.588T21 5v5z"/></svg>',
     },
     {
         title : "History",
@@ -30,7 +30,7 @@ export default function Sidebar({route}) {
     }
   ])
   return (
-    <div className='flex flex-col gap-6 w-36 border-r min-h-screen shadow-lg'>
+    <div className='lg:flex flex-col gap-6 w-36 hidden border-r min-h-screen shadow-lg'>
         <section className='flex flex-col gap-6 p-6'>
             {
                 pages.map((item,i)=>(
