@@ -6,6 +6,9 @@ import DashboardPage from './pages/User/DashboardPage'
 import ProductPage from './pages/User/ProductPage'
 import UserPage from './pages/User/UserPage'
 import HistoryPage from './pages/User/HistoryPage'
+import ProductCreatePage from './pages/User/ProductCreatePage'
+import ProductEditPage from './pages/User/ProductEditPage'
+import Login from './pages/User/Login'
 
 function App() {
   
@@ -15,10 +18,13 @@ function App() {
       <Routes> 
         <Route path="/" element={<Home />} />
         <Route path="/receipt" element={<Receipt />} />
-        <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/product" element={<ProductPage />} />
+        <Route path="/product/create" element={<ProductCreatePage />} />
+        <Route path="/product/edit/:id" element={<ProductEditPage />} />
+        <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/user" element={<UserPage />} />
         <Route path="/history" element={<HistoryPage />} />
+        <Route path="/login" element={<Login />} />
       </Routes>
     </BrowserRouter>
     </>

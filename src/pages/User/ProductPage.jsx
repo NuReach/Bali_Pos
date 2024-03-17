@@ -2,10 +2,12 @@ import React, { useState } from 'react'
 import Navbar from '../Components/Navbar'
 import Sidebar from '../Components/Sidebar'
 import products from '../products'
+import { useNavigate } from 'react-router-dom';
 
 export default function ProductPage() {
   const [data,setData] = useState(products);
   const [filter,setFilter] = useState(false);
+  const navigate = useNavigate();
   const handleClick = (e)=>{
     e.preventDefault();
     setFilter(!filter)
@@ -22,7 +24,10 @@ export default function ProductPage() {
         <div className='flex flex-col gap-3 justify-center w-full p-9 pt-3'>
           <p className='flex font-bold text-lg'>Dashboard</p>
           <div className='flex items-center flex-wrap relative'>
-              <button onClick={(e)=>clickFilter(e,"latest")} className='rounded-full mr-3 my-1 border-2 py-1 px-8 bg-white font-medium text-xs cursor-pointer hover:scale-105 transition'>Latest</button>
+          <button onClick={()=>{
+            navigate("/product/create")
+            }} className='rounded-full mr-3 my-1 border-2 py-1 px-8  font-medium text-xs cursor-pointer hover:scale-105 transition bg-yellow-700 text-white'>ADD</button>
+            <button onClick={(e)=>clickFilter(e,"latest")} className='rounded-full mr-3 my-1 border-2 py-1 px-8 bg-white font-medium text-xs cursor-pointer hover:scale-105 transition'>Latest</button>
             <div className= {filter ? 'flex flex-wrap items-center' : 'hidden' }>
                 <button onClick={(e)=>clickFilter(e,"name")} className='rounded-full mr-3 my-1 border-2 py-1 px-8 bg-white font-medium text-xs cursor-pointer hover:scale-105 transition'>Name</button>
                 <button onClick={(e)=>clickFilter(e,"cost")} className='rounded-full mr-3 my-1 border-2 py-1 px-8 bg-white font-medium text-xs cursor-pointer hover:scale-105 transition'>Cost</button>
@@ -59,8 +64,12 @@ export default function ProductPage() {
                           <p className='w-36 font-medium text-gray-600 line-clamp-1  hidden lg:block'>{item.category}</p>
                           <p className='w-16 font-medium text-gray-600 line-clamp-1  hidden lg:block'>0%</p>
                           <p className='w-48 flex gap-3 flex-wrap justify-end '>  
-                            <button className='font-medium text-xs py-1 rounded-full px-4 text-white bg-yellow-700 w-fit  my-1'>Edit</button>
-                            <button className='font-medium text-xs py-1 rounded-full px-4 text-white bg-red-500 w-fit  my-1'>Delete</button> 
+                            <button onClick={()=>navigate(`/product/edit/${item.id}`)} className='font-medium text-xs py-1 rounded-full px-4 text-white bg-yellow-700 w-fit  my-1'>Edit</button>
+                            <button onClick={()=>{
+                                 if (window.confirm("Do you really want to delete?")) {
+                                    console.log(item.id);
+                                  }
+                            }} className='font-medium text-xs py-1 rounded-full px-4 text-white bg-red-500 w-fit  my-1'>Delete</button> 
                           </p>
                       </div>
                   ))
