@@ -9,6 +9,8 @@ import HistoryPage from './pages/User/HistoryPage'
 import ProductCreatePage from './pages/User/ProductCreatePage'
 import ProductEditPage from './pages/User/ProductEditPage'
 import Login from './pages/User/Login'
+import UserCreatePage from './pages/User/UserCreatePage'
+import UserEditPage from './pages/User/UserEditPage'
 
 function App() {
   
@@ -23,6 +25,8 @@ function App() {
         <Route path="/product/edit/:id" element={<ProductEditPage />} />
         <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/user" element={<UserPage />} />
+        <Route path="/user/create" element={<UserCreatePage />} />
+        <Route path="/user/edit/:id" element={<UserEditPage />} />
         <Route path="/history" element={<HistoryPage />} />
         <Route path="/login" element={<Login />} />
       </Routes>

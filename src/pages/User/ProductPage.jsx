@@ -22,7 +22,7 @@ export default function ProductPage() {
       <div className='flex'>
         <Sidebar route={"/product"} />
         <div className='flex flex-col gap-3 justify-center w-full p-9 pt-3'>
-          <p className='flex font-bold text-lg'>Dashboard</p>
+          <p className='flex font-bold text-lg'>Product</p>
           <div className='flex items-center flex-wrap relative'>
           <button onClick={()=>{
             navigate("/product/create")
