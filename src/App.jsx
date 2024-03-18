@@ -11,6 +11,7 @@ import ProductEditPage from './pages/User/ProductEditPage'
 import Login from './pages/User/Login'
 import UserCreatePage from './pages/User/UserCreatePage'
 import UserEditPage from './pages/User/UserEditPage'
+import HistoryDetail from './pages/User/HistoryDetail'
 
 function App() {
   
@@ -28,6 +29,7 @@ function App() {
         <Route path="/user/create" element={<UserCreatePage />} />
         <Route path="/user/edit/:id" element={<UserEditPage />} />
         <Route path="/history" element={<HistoryPage />} />
+        <Route path="/history/detail/:id" element={<HistoryDetail />} />
         <Route path="/login" element={<Login />} />
       </Routes>
     </BrowserRouter>

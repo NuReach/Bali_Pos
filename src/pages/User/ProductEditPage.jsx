@@ -31,7 +31,7 @@ export default function ProductEditPage() {
                                     <input value={image} onChange={(e)=>setImage(e.target.value)} type="text" id="image" name="image" autoComplete='off' className="block w-full p-2 text-gray-900 border-2 bg-white rounded-lg   " />
                             </div>
                             <div className='flex flex-wrap gap-3 justify-between mt-3'>
-                                <div>
+                                 <div>
                                         <label for="cost" className="block mb-2 text-sm font-medium text-gray-900 ">Cost</label>
                                         <input value={cost} onChange={(e)=>setCost(e.target.value)} type="text" id="cost" name="cost" autoComplete='off'  className="block w-24 p-2 text-gray-900 border-2 bg-white rounded-lg placeholder:text-xs  " />
                                 </div>
