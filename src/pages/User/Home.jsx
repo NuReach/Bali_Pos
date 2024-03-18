@@ -27,13 +27,24 @@ export default function Home() {
     }
   },[key])
 
+  const searchKey = useSelector((state)=>state.function.searchKey);
+  console.log(searchKey);
+
+  
+  useEffect(()=>{
+    if (searchKey == "") {
+      setData(products);
+    }else{
+      setData(products.filter((item)=>item.name.toLowerCase().includes(searchKey.toLowerCase())));
+    }
+  },[searchKey])
 
   const handleFilterMenu = (e,filter)=>{
     e.preventDefault();
     dispatch(filterMenu({key:filter.toLowerCase()}));
   }
   
-  console.log(key);
+
 
   return (
     <div>
