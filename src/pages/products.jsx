@@ -200,5 +200,5 @@ const products = [
         "category": "Bakery"
       }
   ]
-  
+
   export default products;
