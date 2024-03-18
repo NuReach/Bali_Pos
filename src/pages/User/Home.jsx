@@ -1,36 +1,51 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Navbar from '../Components/Navbar'
 import Cart from '../Components/Cart'
 import products from '../products';
 import { useDispatch, useSelector } from 'react-redux';
-import { addToCartReducer } from '../../functionSlice';
+import { addToCartReducer, filterMenu } from '../../functionSlice';
 import Sidebar from '../Components/Sidebar';
 
 export default function Home() {
   const [data,setData] = useState(products);
-  const value = useSelector((state)=>state.function.value);
   const dispatch = useDispatch();
   const cart = useSelector((state)=>state.function.cart);
-  const [category,setCategory] = useState(["All Items","Coffee","Non-Coffee","Beverage","Snacks"]);
-
-
+  const [category,setCategory] = useState(["All","Fruits", "Dairy", "Bakery", "Vegetables", "Meat", "Grains", "Breakfast", "Seafood"]
+  );
   const addToCart = (e,item)=>{
     e.preventDefault();
     dispatch(addToCartReducer({item}));
   }
+  
+  const key = useSelector((state)=>state.function.filterMenuKey);
+ 
+  useEffect(()=>{
+    if (key == "all") {
+      setData(products);
+    }else{
+      setData(products.filter((item)=>item.category.toLowerCase() == key.toLowerCase()));
+    }
+  },[key])
 
-  const route = "All Items";
+
+  const handleFilterMenu = (e,filter)=>{
+    e.preventDefault();
+    dispatch(filterMenu({key:filter.toLowerCase()}));
+  }
+  
+  console.log(key);
+
   return (
     <div>
         <Navbar  />
         <div className='flex justify-between'>
           <Sidebar route={"/"} />
-          <div>
+          <div className='w-full'>
             <div className='lg:hidden items-center gap-6 border-b-2 p-3 justify-center flex flex-wrap  '>
                 {
                     category.map((item,i)=>(
                         <div key={i}>
-                            <button className={ route == item ? 'text-white bg-yellow-700 rounded-lg px-4 py-1 text-xs font-medium' : 'text-yellow-700 text-sm font-medium'}>{item}</button>
+                            <button onClick={(e)=>handleFilterMenu(e,item)} className={ key.toLowerCase() === item.toLowerCase() ? 'text-white bg-yellow-700 rounded-lg px-4 py-1 text-xs font-medium' : 'text-yellow-700 text-sm font-medium'}>{item}</button>
                         </div>
                     ))
                 }

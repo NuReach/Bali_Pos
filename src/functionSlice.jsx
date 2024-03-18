@@ -7,6 +7,7 @@ export const functionSlice = createSlice({
     cart:[],
     showCartBoolean : false,
     showSidebarBoolean : false,
+    filterMenuKey : "all",
   },
   reducers :{
     addToCartReducer: (state, action) => {
@@ -80,11 +81,17 @@ export const functionSlice = createSlice({
       return {
         ...state,showSidebarBoolean:!state.showSidebarBoolean
       }
+    },
+    filterMenu : (state,action)=>{
+      const key = action.payload.key;
+      return {
+        ...state,filterMenuKey:key
+      }
     }
   }
 })
 
 // Action creators are generated for each case reducer function
-export const { addToCartReducer,deleteCartItemReducer,updateCartItemReducer,minusCartItemReducer,showCartDailog,showSidebarDailog } = functionSlice.actions
+export const { addToCartReducer,deleteCartItemReducer,updateCartItemReducer,minusCartItemReducer,showCartDailog,showSidebarDailog,filterMenu } = functionSlice.actions
 
 export default functionSlice.reducer

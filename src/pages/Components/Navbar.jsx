@@ -1,9 +1,10 @@
-import React, { useState } from 'react'
-import { useDispatch } from 'react-redux';
-import { showCartDailog, showSidebarDailog } from '../../functionSlice';
+import React, { useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux';
+import { filterMenu, showCartDailog, showSidebarDailog } from '../../functionSlice';
 
 export default function Navbar() {
-  const [category,setCategory] = useState(["All Items","Coffee","Non-Coffee","Beverage","Snacks"]);
+  const [category,setCategory] = useState(["All","Fruits", "Dairy", "Bakery", "Vegetables", "Meat", "Grains", "Breakfast", "Seafood"]
+  );
   const route = "All Items";
   const dispatch = useDispatch();
   const showCart = (e)=>{
@@ -14,6 +15,15 @@ export default function Navbar() {
     e.preventDefault();
     dispatch(showSidebarDailog())
   }
+
+  const handleFilterMenu = (e,filter)=>{
+    e.preventDefault();
+    dispatch(filterMenu({key:filter.toLowerCase()}));
+  }
+
+  const key = useSelector((state)=>state.function.filterMenuKey);
+ 
+
   return (
     <nav className='p-3 pl-9 flex justify-between items-center border-b relative'>
         <section>
@@ -23,7 +33,7 @@ export default function Navbar() {
             {
                 category.map((item,i)=>(
                     <div key={i}>
-                        <button className={ route == item ? 'text-white bg-yellow-700 rounded-lg px-4 py-1 text-xs font-medium' : 'text-yellow-700 text-sm font-medium'}>{item}</button>
+                        <button onClick={(e)=>handleFilterMenu(e,item)} className={ key.toLowerCase() == item.toLowerCase() ? 'text-white bg-yellow-700 rounded-lg px-4 py-1 text-xs font-medium' : 'text-yellow-700 text-sm font-medium'}>{item}</button>
                     </div>
                 ))
             }
