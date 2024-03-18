@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 
 export default function Sidebar({route}) {
@@ -34,8 +35,11 @@ export default function Sidebar({route}) {
         icon : '<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M6 2h9a2 2 0 0 1 2 2v2h-2V4H6v16h9v-2h2v2a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2"/><path fill="currentColor" d="M16.09 15.59L17.5 17l5-5l-5-5l-1.41 1.41L18.67 11H9v2h9.67z"/></svg>',
     }
   ])
+
+  const showSidebarBoolean = useSelector((state)=>state.function.showSidebarBoolean);
+
   return (
-    <div className='lg:flex flex-col gap-6 w-36 hidden border-r min-h-screen shadow-lg'>
+    <div className={showSidebarBoolean ?'  absolute  flex  h-screen   bg-white lg:relative lg:flex flex-col gap-6  border-r min-h-screen shadow-lg' :'  hidden bg-white lg:relative lg:flex flex-col gap-6 w-36 border-r min-h-screen shadow-lg'}>
         <section className='flex flex-col gap-6 p-6'>
             {
                 pages.map((item,i)=>(
