@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import Navbar from '../Components/Navbar'
 import Sidebar from '../Components/Sidebar'
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Timestamp, collection, deleteDoc, doc, onSnapshot, orderBy, query, setDoc } from "firebase/firestore"; 
+import { Timestamp, collection, deleteDoc, doc, getDoc, getDocs, onSnapshot, orderBy, query, setDoc } from "firebase/firestore"; 
 import { toast } from 'sonner';
 import { db } from '../../firebase';
 import { v4 as uuidv4 } from 'uuid';
@@ -10,17 +10,18 @@ import { v4 as uuidv4 } from 'uuid';
 
 export default function ProductCreatePage() {
     const [name,setName] = useState("");
-    const [image, setImage] = useState(""); // State for image
-    const [price, setPrice] = useState();   // State for price
-    const [cost, setCost] = useState();     // State for cost
-    const [stock, setStock] = useState();   // State for stock
-    const [category, setCategory] = useState(""); // State for category
+    const [image, setImage] = useState(""); 
+    const [price, setPrice] = useState();   
+    const [cost, setCost] = useState();     
+    const [stock, setStock] = useState();   
+    const [category, setCategory] = useState(""); 
     const [discount, setDiscount] = useState(); 
     const navigate = useNavigate();
 
     const location = useLocation();
     const searchParams = new URLSearchParams(location.search);
     const page = searchParams.get('page');
+    
     const [categoryName, setCategoryName] = useState("");
 
     const [categories, setCategories] = useState([]);
@@ -75,16 +76,20 @@ export default function ProductCreatePage() {
         }
     }
 
-    useEffect(()=>{
-        const q = query(collection(db, "categories"), orderBy('createdAt','desc'));
-        const unsubscribe = onSnapshot(q, (querySnapshot) => {
-        const updatedCategories = [];
-        querySnapshot.forEach((doc) => {
-            updatedCategories.push(doc.data());
-        });
-        setCategories(updatedCategories);
-    });
-    },[])
+    //fetch Categories
+    useEffect(() => {
+        const fetchCategories = async () => {
+            const q = query(collection(db, "categories"),orderBy("createdAt","desc"));
+            const querySnapshot = await getDocs(q);
+            const categoriesData = querySnapshot.docs.map(doc => ({
+                ...doc.data()
+              }));
+              setCategories(categoriesData);
+        };
+    
+        fetchCategories();
+      }, []);
+    
 
 
   return (
