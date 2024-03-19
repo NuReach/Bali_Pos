@@ -5,9 +5,10 @@ import { useNavigate } from 'react-router-dom';
 import { collection, deleteDoc, doc, onSnapshot, orderBy, query } from 'firebase/firestore';
 import { db } from '../../firebase';
 import { toast } from 'sonner';
+import LoadingSkeleton from '../Components/LoadingSkeleton';
 
 export default function ProductPage() {
-  const [data,setData] = useState([]);
+  const [data,setData] = useState(null);
   const [filter,setFilter] = useState(false);
   const navigate = useNavigate();
   const handleClick = (e)=>{
@@ -57,7 +58,7 @@ export default function ProductPage() {
                   <p className='font-medium text-xs'>Filter</p>
               </div>
           </div>
-          <div className='p-6 mt-3 border rounded-lg shadow-lg min-h-96 '>
+          <div className='p-6 mt-3 border rounded-lg shadow-lg min-h-screen '>
               <header className='font-bold text-sm flex justify-between'>
                   <p className='w-12'>ID</p>
                   <p className='lg:w-48'>Name</p>
@@ -68,7 +69,7 @@ export default function ProductPage() {
                   <p className='w-48 flex justify-end'>State</p>
               </header>
               {
-                  data.length > 0 ? data?.map((item,i)=>(
+                  data ? data?.map((item,i)=>(
                       <div key={i} className='font-bold text-sm flex justify-between items-center my-6 border-b-2 pb-3'>
                           <p className='w-12'>{i+1}</p>
                           <div className='lg:w-48'>
@@ -91,8 +92,8 @@ export default function ProductPage() {
                           </p>
                       </div>
                   )) : 
-                  <div className='flex h-96 justify-center items-center'>
-                    <p className='font-normal line-clamp-1 text-xs text-gray-500 mt-3'>No Item</p>
+                  <div className='flex h-full justify-center items-center'>
+                    <LoadingSkeleton />
                   </div>
               }
               {/* <div className='w-full flex justify-end'>

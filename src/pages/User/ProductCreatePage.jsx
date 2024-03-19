@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import Navbar from '../Components/Navbar'
 import Sidebar from '../Components/Sidebar'
 import { useLocation, useNavigate } from 'react-router-dom';
-import { collection, deleteDoc, doc, onSnapshot, orderBy, query, setDoc } from "firebase/firestore"; 
+import { Timestamp, collection, deleteDoc, doc, onSnapshot, orderBy, query, setDoc } from "firebase/firestore"; 
 import { toast } from 'sonner';
 import { db } from '../../firebase';
 import { v4 as uuidv4 } from 'uuid';
@@ -25,6 +25,9 @@ export default function ProductCreatePage() {
 
     const [categories, setCategories] = useState([]);
 
+    const date = new Date(); // Get the current date
+    const timestamp = Timestamp.fromDate(date);
+
     const createProduct = async (e)=>{
         e.preventDefault();
         const id = uuidv4();
@@ -38,7 +41,7 @@ export default function ProductCreatePage() {
                 discount : discount,
                 category : category,
                 stock : stock,
-                createdAt: Date.now()
+                createdAt: timestamp
               });
             toast.success("Product created successfully!");
             setName("");
@@ -61,7 +64,7 @@ export default function ProductCreatePage() {
             await setDoc(doc(db, "categories", id), {
                 id: id,
                 name: categoryName,
-                createdAt: Date.now()
+                createdAt: timestamp
               });
             toast.success("Category created successfully!");
             setCategoryName("");
