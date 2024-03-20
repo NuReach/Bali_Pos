@@ -75,6 +75,12 @@ export const functionSlice = createSlice({
       };
     },
 
+    removeAllCartItem : (state,action)=>{
+      return {
+        ...state,cart:[]
+      }
+    },
+
     showCartDailog : (state,action)=>{
       return {
         ...state,showCartBoolean:!state.showCartBoolean
@@ -100,6 +106,6 @@ export const functionSlice = createSlice({
   }
 })
 
-export const { addToCartReducer,deleteCartItemReducer,updateCartItemReducer,minusCartItemReducer,showCartDailog,showSidebarDailog,filterMenu,searchMenu } = functionSlice.actions
+export const { addToCartReducer,deleteCartItemReducer,updateCartItemReducer,minusCartItemReducer,showCartDailog,showSidebarDailog,filterMenu,searchMenu,removeAllCartItem } = functionSlice.actions
 
 export default functionSlice.reducer

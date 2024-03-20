@@ -13,6 +13,7 @@ import UserEditPage from './pages/User/UserEditPage'
 import HistoryDetail from './pages/User/HistoryDetail'
 import { useEffect } from 'react'
 import { toast } from 'sonner'
+import { ProtectedRoute } from './pages/ProtectedRoute'
 
 function App() {
 
@@ -20,17 +21,19 @@ function App() {
     <>
     <BrowserRouter>
       <Routes> 
-        <Route path="/" element={<Home />} />
-        <Route path="/receipt" element={<Receipt />} />
-        <Route path="/product" element={<ProductPage />} />
-        <Route path="/product/create" element={<ProductCreatePage />} />
-        <Route path="/product/edit/:id" element={<ProductEditPage />} />
-        <Route path="/dashboard" element={<DashboardPage />} />
-        <Route path="/user" element={<UserPage />} />
-        <Route path="/user/create" element={<UserCreatePage />} />
-        <Route path="/user/edit/:id" element={<UserEditPage />} />
-        <Route path="/history" element={<HistoryPage />} />
-        <Route path="/history/detail/:id" element={<HistoryDetail />} />
+        <Route element={<ProtectedRoute />} >
+          <Route path="/" element={<Home />} />
+          <Route path="/product" element={<ProductPage />} />
+          <Route path="/receipt" element={<Receipt />} />
+          <Route path="/product/create" element={<ProductCreatePage />} />
+          <Route path="/product/edit/:id" element={<ProductEditPage />} />
+          <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/user" element={<UserPage />} />
+          <Route path="/user/create" element={<UserCreatePage />} />
+          <Route path="/user/edit/:id" element={<UserEditPage />} />
+          <Route path="/history" element={<HistoryPage />} />
+          <Route path="/history/detail/:id" element={<HistoryDetail />} />
+        </Route>
         <Route path="/login" element={<Login />} />
       </Routes>
     </BrowserRouter>

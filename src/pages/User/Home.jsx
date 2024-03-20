@@ -23,19 +23,6 @@ export default function Home() {
     console.log(item);
     dispatch(addToCartReducer({item}));
   }
-
-  //authenication 
-  const navigate = useNavigate();
-  useEffect(()=>{
-    const user = localStorage.getItem("user");
-    if (user) {
-      console.log("Athenticating"); ;
-    }else{
-      navigate("/login");
-      toast.error("Please Login");
-    }
-  },[]);
-
  
 
   //filter

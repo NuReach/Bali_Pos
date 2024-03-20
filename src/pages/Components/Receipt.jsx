@@ -1,10 +1,15 @@
 import React, { useEffect, useState } from 'react'
+import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { removeAllCartItem } from '../../functionSlice';
 
 export default function Receipt() {
   const [printData, setPrintData] = useState(null);
   const date = new Date();
   const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+  const dispatch = useDispatch();
   const formattedDate = date.toLocaleDateString('en-US', options);
+  const navigate = useNavigate();
   
   useEffect(()=>{
     const storedData = localStorage.getItem('printData');
@@ -19,12 +24,16 @@ export default function Receipt() {
     e.preventDefault();
     window.print();
     localStorage.removeItem("printData");
+    dispatch(removeAllCartItem());
+    navigate("/");
   }
 
   
   const back = (e)=>{
     e.preventDefault();
     localStorage.removeItem("printData");
+    dispatch(removeAllCartItem());
+    navigate("/");
   }
 
   console.log(printData);
@@ -44,7 +53,7 @@ export default function Receipt() {
             <section className='mt-3 flex justify-between'>
                 <div>
                 <p className='text-xs font-medium'>From : </p>
-                <p className='text-xs font-medium'>{printData?.user}</p>
+                <p className='text-xs font-medium'>{printData?.user.toUpperCase()}</p>
                 {/* <p className='text-xs font-medium'>{printData?.id}</p> */}
                 </div>
                 <div>
