@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import Navbar from '../Components/Navbar'
 import Sidebar from '../Components/Sidebar'
 import { useNavigate } from 'react-router-dom';
-import { collection, deleteDoc, doc, onSnapshot, orderBy, query } from 'firebase/firestore';
+import { collection, deleteDoc, doc, getDocs, onSnapshot, orderBy, query } from 'firebase/firestore';
 import { db } from '../../firebase';
 import { toast } from 'sonner';
 import LoadingSkeleton from '../Components/LoadingSkeleton';
@@ -20,17 +20,26 @@ export default function ProductPage() {
     alert(slug);
   }
 
+  const deleteProduct = async (e,id)=>{
+    if (window.confirm("Do you really want to delete?")) {
+      await deleteDoc(doc(db, "products", id));
+      toast.success("Product deleted successfully")
+    }
+  }
+
   
-  useEffect(()=>{
-    const q = query(collection(db, "products"), orderBy('createdAt','desc'));
-    const unsubscribe = onSnapshot(q, (querySnapshot) => {
-    const updatedCategories = [];
-    querySnapshot.forEach((doc) => {
-        updatedCategories.push(doc.data());
-    });
-    setData(updatedCategories);
-  });
-},[])
+  useEffect(() => {
+    const fetchProducts = async () => {
+      const querySnapshot = await getDocs(collection(db, "products"));
+      const data = querySnapshot.docs.map(doc => ({
+        ...doc.data()
+      }));
+      setData(data);
+    }
+    fetchProducts();
+  }, [deleteProduct]);
+
+
 
 
   return (
@@ -85,12 +94,7 @@ export default function ProductPage() {
                             <p className='w-16 font-medium text-gray-600 line-clamp-1  hidden lg:block'>{item.discount}%</p>
                             <p className='w-48 flex gap-3 flex-wrap justify-end '>  
                               <button onClick={()=>navigate(`/product/edit/${item.id}`)} className='font-medium text-xs py-1 rounded-full px-4 text-white bg-yellow-700 w-fit  my-1'>Edit</button>
-                              <button onClick={async ()=>{
-                                  if (window.confirm("Do you really want to delete?")) {
-                                      await deleteDoc(doc(db, "products", item.id));
-                                      toast.success("Product deleted successfully")
-                                    }
-                              }} className='font-medium text-xs py-1 rounded-full px-4 text-white bg-red-500 w-fit  my-1'>Delete</button> 
+                              <button onClick={ (e)=>deleteProduct(e,item.id)} className='font-medium text-xs py-1 rounded-full px-4 text-white bg-red-500 w-fit  my-1'>Delete</button> 
                             </p>
                         </div>
                     )) : 

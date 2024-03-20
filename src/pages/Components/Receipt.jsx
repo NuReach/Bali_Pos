@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { removeAllCartItem } from '../../functionSlice';
+import { collection, doc, getDoc } from 'firebase/firestore';
+import { db } from '../../firebase';
 
 export default function Receipt() {
   const [printData, setPrintData] = useState(null);
@@ -10,15 +12,27 @@ export default function Receipt() {
   const dispatch = useDispatch();
   const formattedDate = date.toLocaleDateString('en-US', options);
   const navigate = useNavigate();
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const id = searchParams.get('id');
+
+  const fetchOrder = async ()=>{
+    const orderRef = doc(db, "cart", id); // Reference to the product document
+    const order = await getDoc(orderRef);
+    setPrintData(order.data());
+   } 
   
   useEffect(()=>{
     const storedData = localStorage.getItem('printData');
     if (storedData) {
       setPrintData(JSON.parse(storedData));
     } else {
-      alert('No data found in local storage.');
+        if (id) {
+        fetchOrder();
+        }
     }
   },[])
+
 
   const print = (e)=>{
     e.preventDefault();
@@ -68,7 +82,7 @@ export default function Receipt() {
             </section>
             <section className='flex flex-col gap-3 mt-3 border-b-2 border-t-2 py-3'>
                 {
-                    printData?.cart.map((cartItem,i)=>(
+                    printData?.cartItems.map((cartItem,i)=>(
                         <section className='flex' key={i}>
                             <p className='text-xs font-medium w-36 truncate justify-between'>{cartItem.item.name}</p>
                             <p className='text-xs font-medium w-24'>{cartItem.item.price}$</p>

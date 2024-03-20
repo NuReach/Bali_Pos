@@ -2,8 +2,10 @@ import React, {useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { deleteCartItemReducer, minusCartItemReducer, updateCartItemReducer } from '../../functionSlice';
 import { useNavigate } from 'react-router-dom';
-import { Timestamp } from 'firebase/firestore';
+import { Timestamp, doc, setDoc } from 'firebase/firestore';
 import { v4 as uuidv4 } from 'uuid';
+import { toast } from 'sonner';
+import { db } from '../../firebase';
 
 
 export default function Cart() {
@@ -14,7 +16,6 @@ export default function Cart() {
   const [discount, setDiscount] = useState("0");
   const [discountPrice,setDiscountPrice] = useState("");
   const [payment,setPayment] = useState("");
-  const [reciept,setReceipt] = useState({});
 
   const navigate = useNavigate();
 
@@ -56,30 +57,49 @@ export default function Cart() {
   }
 
 
-  const handleSubmit = (e)=>{
+  const handleSubmit = async (e)=>{
     e.preventDefault();
     if (payment=="") {
         alert("Please select payment");
     }else{
     const id = uuidv4();
-    const dataToStore = {
-        id: id,
-        cart: cart,
-        discount: parseFloat(discount),
-        subTotal: parseFloat(subTotal),
-        payment:payment,
-        total: parseFloat(total),
-        user: user.username,
-        createdAt: Date.now()
-      };
-      localStorage.setItem('printData', JSON.stringify(dataToStore));
-      navigate("/receipt");
+      try {
+        toast.loading("Please wait for a moment")
+        const dataToStore = {
+            id: id,
+            cartItems: cart,
+            discount: parseFloat(discount),
+            subTotal: parseFloat(subTotal),
+            payment:payment,
+            total: parseFloat(total),
+            user: user.username,
+            createdAt: Date.now()
+          };
+            await setDoc(doc(db, "cart", id), {
+                id: id,
+                cartItems: cart,
+                discount: parseFloat(discount),
+                subTotal: parseFloat(subTotal),
+                payment:payment,
+                total: parseFloat(total),
+                user: user.username,
+                createdAt: Date.now()
+            });
+            toast.success("Order created successfully!");
+            localStorage.setItem('printData', JSON.stringify(dataToStore));
+            console.log(dataToStore);
+            navigate("/receipt");
+        } catch (error) {
+            console.log(error);
+            toast.error('Error creating order ', error)
+        }finally{
+            toast.dismiss();
+        }
     }
   }
 
   const showCartBoolean = useSelector((state)=>state.function.showCartBoolean);
   const user = JSON.parse(localStorage.getItem("user"));
-  console.log(user);
 
   return (
     <div className={showCartBoolean ? 'w-96 border-l shadow-lg p-3 gap-3 absolute right-0 bg-white lg:relative  lg:flex flex-col transition-opacity ' : 'min-w-96 w-96 border-l shadow-lg p-3 gap-3 absolute right-0  bg-white lg:relative hidden  lg:flex flex-col '} >

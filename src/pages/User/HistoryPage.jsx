@@ -1,11 +1,15 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Navbar from '../Components/Navbar'
 import Sidebar from '../Components/Sidebar'
 import products from '../products'
 import { useNavigate } from 'react-router-dom';
+import { collection, deleteDoc, doc, getDocs } from 'firebase/firestore';
+import { db } from '../../firebase';
+import LoadingSkeleton from '../Components/LoadingSkeleton';
+import { toast } from 'sonner';
 
 export default function HistoryPage() {
-  const [data,setData] = useState(products);
+  const [data,setData] = useState();
   const [filter,setFilter] = useState(false);
   const navigate = useNavigate();
   const handleClick = (e)=>{
@@ -16,13 +20,33 @@ export default function HistoryPage() {
     e.preventDefault();
     alert(slug);
   }
+
+  const deleteOrder = async (e,id)=>{
+    if (window.confirm("Do you really want to delete?")) {
+      await deleteDoc(doc(db, "cart", id));
+      toast.success("Order deleted successfully")
+    }
+  }
+
+
+  useEffect(() => {
+    const fetchOrders = async () => {
+      const querySnapshot = await getDocs(collection(db, "cart"));
+      const data = querySnapshot.docs.map(doc => ({
+        ...doc.data()
+      }));
+      setData(data);
+    }
+    fetchOrders();
+  }, [deleteOrder]);
+  
   return (
     <div>
       <Navbar />
       <div className='flex'>
         <Sidebar route={"/history"} />
         <div className='flex flex-col gap-3 justify-center w-full p-9 pt-3'>
-          <p className='flex font-bold text-lg'>History</p>
+          <p className='flex font-bold text-3xl'>History</p>
           <div className='flex items-center flex-wrap relative'>
             <button onClick={(e)=>clickFilter(e,"latest")} className='rounded-full mr-3 my-1 border-2 py-1 px-8 bg-white font-medium text-xs cursor-pointer hover:scale-105 transition'>Latest</button>
             <div className= {filter ? 'flex flex-wrap items-center' : 'hidden' }>
@@ -41,36 +65,37 @@ export default function HistoryPage() {
           <div className='p-6 mt-3 border rounded-lg shadow-lg '>
               <header className='font-bold text-sm flex justify-between'>
                   <p className='w-12'>ID</p>
-                  <p className='lg:w-48'>Name</p>
+                  <p className='lg:w-48'>Subtotal</p>
                   <p className='w-16 hidden lg:block'>Discount</p>
                   <p className='w-12 hidden md:block'>Price</p>
                   <p className='w-36 hidden lg:block'>Date</p>
                   <p className='w-16 hidden lg:block'>Payment</p>
                   <p className='w-48 flex justify-end'>State</p>
               </header>
+            <div className='min-h-screen'>
               {
-                  data.map((item,i)=>(
-                      <div className='font-bold text-sm flex justify-between items-center my-6 border-b-2 pb-3'>
+                  data ? data.map((item,i)=>(
+                      <div key={i} className='font-bold text-sm flex justify-between items-center my-6 border-b-2 pb-3'>
                           <p className='w-12'>{i+1}</p>
                           <div className='lg:w-48'>
-                          <p className='font-medium text-gray-600 line-clamp-1 truncate'>{item.name}</p>
-                          <p className='font-normal line-clamp-1 text-xs text-gray-500 mt-3'>Cashier:{item.stock}</p>
+                          <p className='font-medium text-gray-600 line-clamp-1 truncate'>{item.subTotal} $</p>
+                          <p className='font-normal line-clamp-1 text-xs text-gray-500 mt-3'>Cashier: {item.user.toUpperCase()}</p>
                           </div>
-                          <p className='w-16 font-medium text-gray-600 line-clamp-1  hidden lg:block'>{item.cost}</p>
-                          <p className='w-12 font-medium text-gray-600 line-clamp-1  hidden md:block'>{item.price}</p>
-                          <p className='w-36 font-medium text-gray-600 line-clamp-1  hidden lg:block'>{item.category}</p>
-                          <p className='w-16 font-medium text-gray-600 line-clamp-1  hidden lg:block'>0%</p>
+                          <p className='w-16 font-medium text-gray-600 line-clamp-1  hidden lg:block'>{item.discount} %</p>
+                          <p className='w-12 font-medium text-gray-600 line-clamp-1  hidden md:block'>{item.total} $</p>
+                          <p className='w-36 font-medium text-gray-600 line-clamp-1  hidden lg:block'>{new Date(item.createdAt).toLocaleDateString()+" "+new Date(item.createdAt).toLocaleTimeString()}</p>
+                          <p className='w-16 font-medium text-gray-600 line-clamp-1  hidden lg:block'>{item.payment}</p>
                           <p className='w-48 flex gap-3 flex-wrap justify-end '>  
-                            <button onClick={()=>navigate(`/history/detail/${item.id}`)} className='font-medium text-xs py-1 rounded-full px-4 text-white bg-yellow-700 w-fit  my-1'>Preview</button>
-                            <button onClick={()=>{
-                                 if (window.confirm("Do you really want to delete?")) {
-                                    console.log(item.id);
-                                  }
-                            }} className='font-medium text-xs py-1 rounded-full px-4 text-white bg-red-500 w-fit  my-1'>Delete</button> 
+                            <button onClick={()=>navigate(`/receipt?id=${item.id}`)} className='font-medium text-xs py-1 rounded-full px-4 text-white bg-yellow-700 w-fit  my-1'>Preview</button>
+                            <button onClick={(e)=>deleteOrder(e,item.id)} className='font-medium text-xs py-1 rounded-full px-4 text-white bg-red-500 w-fit  my-1'>Delete</button> 
                           </p>
                       </div>
-                  ))
+                  )): 
+                  <div className='min-h-screen flex justify-center items-center'>
+                    <LoadingSkeleton />
+                  </div>
               }
+              </div>
               <div className='w-full flex justify-end'>
                   <button className='font-medium text-xs py-1 rounded-md px-4 text-white bg-black  my-1 hidden xl:block'>Next</button>
               </div>
