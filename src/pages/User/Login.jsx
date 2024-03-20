@@ -1,13 +1,34 @@
+import { collection, getDocs, query, where } from 'firebase/firestore';
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom';
+import { db } from '../../firebase';
+import { toast } from 'sonner';
 
 export default function Login() {
     const [username,setUsername] = useState("");
     const [password,setPassword] = useState("");
     const navigate = useNavigate();
-    const login = ()=>{
-        alert(username+""+password);
-        navigate("/");
+    const login = async (e)=>{
+        e.preventDefault();
+        const q = query(
+            collection(db, "users"),
+            where("username", "==", username),
+            where("password", "==", password) 
+            );
+            
+        const querySnapshot = await getDocs(q);
+        const data = querySnapshot.docs.map((doc)=>(
+        {...doc.data()}
+        ))
+
+        if (data.length > 0) {
+            const user = {id:data[0].id,username:data[0].username,role:data[0].role};
+            localStorage.setItem('user', JSON.stringify(user));
+            navigate("/");
+            toast.success("Login Successfully")
+        }else{
+            toast.error("Invalid username and password")
+        }
     }
   return (
     <div className='flex'>

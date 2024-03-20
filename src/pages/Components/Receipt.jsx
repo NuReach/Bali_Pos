@@ -18,6 +18,13 @@ export default function Receipt() {
   const print = (e)=>{
     e.preventDefault();
     window.print();
+    localStorage.removeItem("printData");
+  }
+
+  
+  const back = (e)=>{
+    e.preventDefault();
+    localStorage.removeItem("printData");
   }
 
   console.log(printData);
@@ -94,7 +101,7 @@ export default function Receipt() {
                 <button onClick={print} className='w-full rounded-lg bg-yellow-700 text-white text-xs py-2 font-bold print:hidden'>Print Receipt</button>
             </section>
             <section className=' mt-3'>
-                <button className='w-full rounded-lg bg-black text-white text-xs py-2 font-bold print:hidden'>Back</button>
+                <button onClick={back} className='w-full rounded-lg bg-black text-white text-xs py-2 font-bold print:hidden' >Back</button>
             </section>
         </div>
     </div>

@@ -7,6 +7,8 @@ import Sidebar from '../Components/Sidebar';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../../firebase';
 import LoadingSkeleton from '../Components/LoadingSkeleton';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 
 export default function Home() {
   const [data,setData] = useState();
@@ -21,6 +23,20 @@ export default function Home() {
     console.log(item);
     dispatch(addToCartReducer({item}));
   }
+
+  //authenication 
+  const navigate = useNavigate();
+  useEffect(()=>{
+    const user = localStorage.getItem("user");
+    if (user) {
+      console.log("Athenticating"); ;
+    }else{
+      navigate("/login");
+      toast.error("Please Login");
+    }
+  },[]);
+
+ 
 
   //filter
   const key = useSelector((state)=>state.function.filterMenuKey);

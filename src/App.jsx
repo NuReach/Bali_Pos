@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import Home from './pages/User/Home'
 import Receipt from './pages/Components/Receipt'
@@ -12,9 +11,11 @@ import Login from './pages/User/Login'
 import UserCreatePage from './pages/User/UserCreatePage'
 import UserEditPage from './pages/User/UserEditPage'
 import HistoryDetail from './pages/User/HistoryDetail'
+import { useEffect } from 'react'
+import { toast } from 'sonner'
 
 function App() {
-  
+
   return (
     <>
     <BrowserRouter>
