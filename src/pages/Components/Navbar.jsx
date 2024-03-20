@@ -47,7 +47,7 @@ export default function Navbar() {
       setCategories(categoriesData);
     }
     fetchCategories();
-  }, []);
+  }, [categories]);
 
  
   return (

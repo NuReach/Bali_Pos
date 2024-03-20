@@ -27,8 +27,6 @@ export default function ProductCreatePage() {
 
     const [categories, setCategories] = useState();
 
-    const date = new Date(); // Get the current date
-    const timestamp = Timestamp.fromDate(date);
 
     const createProduct = async (e)=>{
         e.preventDefault();
@@ -38,12 +36,12 @@ export default function ProductCreatePage() {
                 id: id,
                 name: name,
                 image : image,
-                price : price,
-                cost : cost,
-                discount : discount,
+                price : parseFloat(price),
+                cost : parseFloat(cost),
+                discount : parseFloat(discount),
                 category : category,
                 stock : stock,
-                createdAt: timestamp
+                createdAt: Date.now()
               });
             toast.success("Product created successfully!");
             setName("");
@@ -66,7 +64,7 @@ export default function ProductCreatePage() {
             await setDoc(doc(db, "categories", id), {
                 id: id,
                 name: categoryName,
-                createdAt: timestamp
+                createdAt: Date.now(),
               });
             toast.success("Category created successfully!");
             setCategoryName("");
@@ -90,6 +88,8 @@ export default function ProductCreatePage() {
     
         fetchCategories();
       }, [categories]);
+
+      console.log(category);
     
 
 
@@ -138,6 +138,7 @@ export default function ProductCreatePage() {
                                 <div>
                                         <label htmlFor="category" className="block mb-2 text-sm font-medium text-gray-900 ">Category</label>
                                          <select className='block w-full p-2 py-3 text-gray-900 border-2 bg-white rounded-lg text-xs'  name="category" id="category" value={category} onChange={(e)=>setCategory(e.target.value)} required>
+                                            <option value="">Select Category</option>
                                             {
                                                 categories?.map((item,i)=>(
                                                     <option key={i}  value={item.name}>{item.name}</option>

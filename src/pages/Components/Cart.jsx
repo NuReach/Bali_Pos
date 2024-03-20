@@ -11,7 +11,7 @@ export default function Cart() {
   const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
   const formattedDate = date.toLocaleDateString('en-US', options);
 
-  const [discount, setDiscount] = useState("");
+  const [discount, setDiscount] = useState("0");
   const [discountPrice,setDiscountPrice] = useState("");
   const [payment,setPayment] = useState("");
   const [reciept,setReceipt] = useState({});
@@ -31,13 +31,13 @@ export default function Cart() {
   const cart = useSelector((state)=>state.function.cart);
   const dispatch = useDispatch();
 
-  const [subTotal, setSubTotal]= useState(0);
-  const [total,setTotal] = useState(0);
+  const [subTotal, setSubTotal]= useState("");
+  const [total,setTotal] = useState("");
 
   useEffect(()=>{
-    setSubTotal((cart.reduce((a,cartItem)=>a + parseFloat(cartItem.total),0)));
-    setTotal(parseFloat(subTotal*(100-discount)/100));
-    setDiscountPrice(parseFloat(subTotal*(discount)/100))
+    setSubTotal(parseFloat(cart.reduce((a,cartItem)=>a + cartItem.total,0)).toFixed(2));
+    setTotal(parseFloat(subTotal*(100-discount)/100).toFixed(2));
+    setDiscountPrice(parseFloat(subTotal*(discount)/100).toFixed(2))
   },[discount,cart,subTotal,total,discountPrice])
 
   const handleDelete = (e,item)=>{
@@ -58,10 +58,8 @@ export default function Cart() {
 
   const handleSubmit = (e)=>{
     e.preventDefault();
-    const date = new Date(); // Get the current date
-    const timestamp = Timestamp.fromDate(date);
     const id = uuidv4();
-    setReceipt({id:id,cart:cart,discount:parseFloat(discount),subTotal:parseFloat(subTotal),total:parseFloat(total),createdDate:timestamp})
+    setReceipt({id:id,cart:cart,discount:parseFloat(discount),subTotal:parseFloat(subTotal),total:parseFloat(total),createdAt:Date.now()});
     const dataToStore = {
         id: id,
         cart: cart,
@@ -70,7 +68,7 @@ export default function Cart() {
         payment:payment,
         total: parseFloat(total),
         user:"Hong Nnurech",
-        createdDate: timestamp
+        createdAt: Date.now()
       };
       localStorage.setItem('printData', JSON.stringify(dataToStore));
       navigate("/receipt");

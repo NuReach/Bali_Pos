@@ -2,9 +2,10 @@ import React, { useEffect, useState } from 'react'
 
 export default function Receipt() {
   const [printData, setPrintData] = useState(null);
-  const date = new Date(printData?.createdDate);
+  const date = new Date();
   const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
   const formattedDate = date.toLocaleDateString('en-US', options);
+  
   useEffect(()=>{
     const storedData = localStorage.getItem('printData');
     if (storedData) {
@@ -30,14 +31,14 @@ export default function Receipt() {
                     <p className='text-xs font-medium'>Villa and Resort, Kompot, Cambodia</p>
                 </div>
                 <div>
-                    <p className='text-xs font-medium'>{formattedDate}</p>
+                    <p className='text-xs font-medium'>{new Date(printData?.createdAt).toLocaleDateString()+" "+new Date(printData?.createdAt).toLocaleTimeString()}</p>
                 </div>
             </section>
             <section className='mt-3 flex justify-between'>
                 <div>
                 <p className='text-xs font-medium'>From : </p>
                 <p className='text-xs font-medium'>{printData?.user}</p>
-                <p className='text-xs font-medium'>{printData?.id}</p>
+                {/* <p className='text-xs font-medium'>{printData?.id}</p> */}
                 </div>
                 <div>
                     <p className='text-xs font-medium uppercase'>Payment : {printData?.payment} </p>
@@ -52,7 +53,7 @@ export default function Receipt() {
             <section className='flex flex-col gap-3 mt-3 border-b-2 border-t-2 py-3'>
                 {
                     printData?.cart.map((cartItem,i)=>(
-                        <section className='flex'>
+                        <section className='flex' key={i}>
                             <p className='text-xs font-medium w-36 truncate justify-between'>{cartItem.item.name}</p>
                             <p className='text-xs font-medium w-24'>{cartItem.item.price}$</p>
                             <p className='text-xs font-medium w-24'>{cartItem.qty}X</p>
@@ -91,6 +92,9 @@ export default function Receipt() {
             </section>
             <section>
                 <button onClick={print} className='w-full rounded-lg bg-yellow-700 text-white text-xs py-2 font-bold print:hidden'>Print Receipt</button>
+            </section>
+            <section className=' mt-3'>
+                <button className='w-full rounded-lg bg-black text-white text-xs py-2 font-bold print:hidden'>Back</button>
             </section>
         </div>
     </div>

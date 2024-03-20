@@ -77,6 +77,8 @@ export default function Home() {
     fetchProducts();
   }, []);
 
+  console.log(data);
+
   return (
     <div>
         <Navbar  />
@@ -130,7 +132,7 @@ export default function Home() {
                 {
                   data ?
                     data.map((item,i)=>(
-                      <div onClick={(e)=>addToCart(e,item)} key={i} className={ cart.find((x)=>x.item.id == item.id) ? 'p-3 border-2 flex border-yellow-700  rounded-lg w-72 h-24 gap-6 cursor-pointer' : 'p-3 border-2 flex  rounded-lg w-72 h-24 gap-6 cursor-pointer'}>
+                      <div  onClick={(e)=>addToCart(e,item)} key={i} className={ cart.find((x)=>x.item.id == item.id) ? 'p-3 border-2 flex border-yellow-700  rounded-lg w-72 h-24 gap-6 cursor-pointer' : 'p-3 border-2 flex  rounded-lg w-72 h-24 gap-6 cursor-pointer'}>
                         <img src={item.image} className='w-20 h-full rounded-lg object-cover' alt="" />
                         <div>
                           <p className='font-medium text-sm truncate'>{item.name}</p>
