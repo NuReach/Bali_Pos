@@ -1,4 +1,5 @@
-import { createSlice } from '@reduxjs/toolkit'
+import { createSlice } from '@reduxjs/toolkit';
+import { v4 as uuidv4 } from 'uuid';
 
 export const functionSlice = createSlice({
   name: 'functionSlice',
@@ -18,7 +19,7 @@ export const functionSlice = createSlice({
       if (existingCartItem) {
         const updatedCart = state.cart.map(cartItem => {
           if (cartItem.item.id === itemId) {
-            return { ...cartItem, qty: cartItem.qty + 1, total: (cartItem.qty + 1) * cartItem.item.price }; // Update total
+            return { ...cartItem, qty: cartItem.qty + 1, total: (cartItem.qty + 1) * parseFloat(cartItem.item.price) }; // Update total
           }
           return cartItem;
         });
@@ -27,7 +28,8 @@ export const functionSlice = createSlice({
           cart: updatedCart
         };
       } else {
-        const cartItem = { id: Date.now(), item: item, qty: 1, total: item.price }; // Add total
+        const id = uuidv4();
+        const cartItem = { id: id, item: item, qty: 1, total: parseFloat(item.price) }; // Add total
         return {
           ...state,
           cart: [...state.cart, cartItem]
@@ -41,7 +43,7 @@ export const functionSlice = createSlice({
       const { id } = action.payload;
       const updatedCart = state.cart.map(item => {
         if (item.id === id) {
-          return { ...item, qty: item.qty + 1, total: (item.qty + 1) * item.item.price }; // Update total
+          return { ...item, qty: item.qty + 1, total: (item.qty + 1) * parseFloat(item.item.price) }; // Update total
         }
         return item;
       });
@@ -55,7 +57,7 @@ export const functionSlice = createSlice({
       const { id } = action.payload;
       const updatedCart = state.cart.map(item => {
         if (item.id === id) {
-          return { ...item, qty: item.qty - 1, total: (item.qty - 1) * item.item.price }; // Update total
+          return { ...item, qty: item.qty - 1, total: (item.qty - 1) * parseFloat(item.item.price) }; // Update total
         }
         return item;
       });
@@ -98,7 +100,6 @@ export const functionSlice = createSlice({
   }
 })
 
-// Action creators are generated for each case reducer function
 export const { addToCartReducer,deleteCartItemReducer,updateCartItemReducer,minusCartItemReducer,showCartDailog,showSidebarDailog,filterMenu,searchMenu } = functionSlice.actions
 
 export default functionSlice.reducer

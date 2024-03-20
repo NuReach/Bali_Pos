@@ -69,33 +69,42 @@ export default function ProductPage() {
                   <p className='w-48 flex justify-end'>State</p>
               </header>
               {
-                  data ? data?.map((item,i)=>(
-                      <div key={i} className='font-bold text-sm flex justify-between items-center my-6 border-b-2 pb-3'>
-                          <p className='w-12'>{i+1}</p>
-                          <div className='lg:w-48'>
-                          <p className='font-medium text-gray-600 line-clamp-1 truncate'>{item.name}</p>
-                          <p className='font-normal line-clamp-1 text-xs text-gray-500 mt-3'>Stock:{item.stock}</p>
-                          </div>
-                          <p className='w-12 font-medium text-gray-600 line-clamp-1  hidden lg:block'>{item.cost}</p>
-                          <p className='w-12 font-medium text-gray-600 line-clamp-1  hidden md:block'>{item.price}</p>
-                          <p className='w-36 font-medium text-gray-600 line-clamp-1  hidden lg:block'>{item.category}</p>
-                          <p className='w-16 font-medium text-gray-600 line-clamp-1  hidden lg:block'>{item.discount}%</p>
-                          <p className='w-48 flex gap-3 flex-wrap justify-end '>  
-                            <button onClick={()=>navigate(`/product/edit/${item.id}`)} className='font-medium text-xs py-1 rounded-full px-4 text-white bg-yellow-700 w-fit  my-1'>Edit</button>
-                            <button onClick={async ()=>{
-                               alert(item.id)
-                                //  if (window.confirm("Do you really want to delete?")) {
-                                //     await deleteDoc(doc(db, "products", item.id));
-                                //     toast.success("Product deleted successfully")
-                                //   }
-                            }} className='font-medium text-xs py-1 rounded-full px-4 text-white bg-red-500 w-fit  my-1'>Delete</button> 
-                          </p>
-                      </div>
-                  )) : 
+                data ? 
+                <div>
+                  {
+                    data?.length >0 ? data?.map((item,i)=>(
+                        <div key={i} className='font-bold text-sm flex justify-between items-center my-6 border-b-2 pb-3'>
+                            <p className='w-12'>{i+1}</p>
+                            <div className='lg:w-48'>
+                            <p className='font-medium text-gray-600 line-clamp-1 truncate'>{item.name}</p>
+                            <p className='font-normal line-clamp-1 text-xs text-gray-500 mt-3'>Stock:{item.stock}</p>
+                            </div>
+                            <p className='w-12 font-medium text-gray-600 line-clamp-1  hidden lg:block'>{item.cost}</p>
+                            <p className='w-12 font-medium text-gray-600 line-clamp-1  hidden md:block'>{item.price}</p>
+                            <p className='w-36 font-medium text-gray-600 line-clamp-1  hidden lg:block'>{item.category}</p>
+                            <p className='w-16 font-medium text-gray-600 line-clamp-1  hidden lg:block'>{item.discount}%</p>
+                            <p className='w-48 flex gap-3 flex-wrap justify-end '>  
+                              <button onClick={()=>navigate(`/product/edit/${item.id}`)} className='font-medium text-xs py-1 rounded-full px-4 text-white bg-yellow-700 w-fit  my-1'>Edit</button>
+                              <button onClick={async ()=>{
+                                  if (window.confirm("Do you really want to delete?")) {
+                                      await deleteDoc(doc(db, "products", item.id));
+                                      toast.success("Product deleted successfully")
+                                    }
+                              }} className='font-medium text-xs py-1 rounded-full px-4 text-white bg-red-500 w-fit  my-1'>Delete</button> 
+                            </p>
+                        </div>
+                    )) : 
+                    <div className='w-full h-screen flex justify-center items-center text-xs'>
+                      <p>No Items</p>
+                    </div>
+                }
+                </div> :
                   <div className='flex h-full justify-center items-center'>
                     <LoadingSkeleton />
                   </div>
               }
+              
+  
               {/* <div className='w-full flex justify-end'>
                   <button className='font-medium text-xs py-1 rounded-md px-4 text-white bg-black  my-1 hidden xl:block'>Next</button>
               </div> */}

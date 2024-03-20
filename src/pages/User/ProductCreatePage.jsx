@@ -6,16 +6,17 @@ import { Timestamp, collection, deleteDoc, doc, getDoc, getDocs, onSnapshot, ord
 import { toast } from 'sonner';
 import { db } from '../../firebase';
 import { v4 as uuidv4 } from 'uuid';
+import LoadingSkeleton from '../Components/LoadingSkeleton';
 
 
 export default function ProductCreatePage() {
     const [name,setName] = useState("");
     const [image, setImage] = useState(""); 
-    const [price, setPrice] = useState();   
-    const [cost, setCost] = useState();     
-    const [stock, setStock] = useState();   
+    const [price, setPrice] = useState("");   
+    const [cost, setCost] = useState("");     
+    const [stock, setStock] = useState("");   
     const [category, setCategory] = useState(""); 
-    const [discount, setDiscount] = useState(); 
+    const [discount, setDiscount] = useState(""); 
     const navigate = useNavigate();
 
     const location = useLocation();
@@ -24,7 +25,7 @@ export default function ProductCreatePage() {
     
     const [categoryName, setCategoryName] = useState("");
 
-    const [categories, setCategories] = useState([]);
+    const [categories, setCategories] = useState();
 
     const date = new Date(); // Get the current date
     const timestamp = Timestamp.fromDate(date);
@@ -88,7 +89,7 @@ export default function ProductCreatePage() {
         };
     
         fetchCategories();
-      }, []);
+      }, [categories]);
     
 
 
@@ -166,22 +167,35 @@ export default function ProductCreatePage() {
                                     <p className='w-20'>State</p>
                                 </header>
                                 {
-                                    categories?.map((item,i)=>(
-                                        <div key={i} className='font-bold text-sm flex justify-between items-center my-6 border-b-2 pb-3'>
-                                            <p className='w-12'>{i+1}</p>
-                                            <div className='w-48'>
-                                            <p className='font-medium text-gray-600 line-clamp-1 truncate'>{item.name}</p>                      
+                                categories ? 
+                                <div>
+                                    {
+                                        categories?.length >0 ? categories?.map((item,i)=>(
+                                            <div key={i} className='font-bold text-sm flex justify-between items-center my-6 border-b-2 pb-3'>
+                                                <p className='w-12'>{i+1}</p>
+                                                <div className='w-48'>
+                                                <p className='font-medium text-gray-600 line-clamp-1 truncate'>{item.name}</p>                      
+                                                </div>
+                                                <p className='w-20'>  
+                                                <button onClick={ async()=>{
+                                                    if (window.confirm("Do you really want to delete?")) {
+                                                        await deleteDoc(doc(db, "categories", item.id));
+                                                        toast.success("Deleted Category Successfully");
+                                                        //navigate("/product/create?page=product")
+                                                        }
+                                                }} className='font-medium text-xs py-1 rounded-full px-4 text-white bg-red-500 w-fit  my-1'>Delete</button> 
+                                                </p>
                                             </div>
-                                            <p className='w-20'>  
-                                            <button onClick={ async()=>{
-                                                if (window.confirm("Do you really want to delete?")) {
-                                                    await deleteDoc(doc(db, "categories", item.id));
-                                                    toast.success("Deleted Category Successfully");
-                                                    }
-                                            }} className='font-medium text-xs py-1 rounded-full px-4 text-white bg-red-500 w-fit  my-1'>Delete</button> 
-                                            </p>
+                                        )) : 
+                                        <div className='w-full h-screen flex justify-center items-center text-xs'>
+                                            <p>No Items</p>
                                         </div>
-                                    ))
+                                    }
+                                </div>
+                                 :
+                                    <div className='flex h-screen justify-center items-center'>
+                                        <LoadingSkeleton />
+                                    </div>
                                 }
                                 {/* <div className='w-full flex justify-end'>
                                     <button className='font-medium text-xs py-1 rounded-md px-4 text-white bg-black  my-1 hidden xl:block'>Next</button>

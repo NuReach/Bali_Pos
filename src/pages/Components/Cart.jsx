@@ -2,6 +2,8 @@ import React, {useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { deleteCartItemReducer, minusCartItemReducer, updateCartItemReducer } from '../../functionSlice';
 import { useNavigate } from 'react-router-dom';
+import { Timestamp } from 'firebase/firestore';
+import { v4 as uuidv4 } from 'uuid';
 
 
 export default function Cart() {
@@ -9,8 +11,8 @@ export default function Cart() {
   const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
   const formattedDate = date.toLocaleDateString('en-US', options);
 
-  const [discount, setDiscount] = useState(0);
-  const [discountPrice,setDiscountPrice] = useState(0);
+  const [discount, setDiscount] = useState("");
+  const [discountPrice,setDiscountPrice] = useState("");
   const [payment,setPayment] = useState("");
   const [reciept,setReceipt] = useState({});
 
@@ -31,10 +33,11 @@ export default function Cart() {
 
   const [subTotal, setSubTotal]= useState(0);
   const [total,setTotal] = useState(0);
+
   useEffect(()=>{
-    setSubTotal((cart.reduce((a,cartItem)=>a + cartItem.total,0)).toFixed(2));
-    setTotal((subTotal*(100-discount)/100).toFixed(2));
-    setDiscountPrice((subTotal*(discount)/100).toFixed(2))
+    setSubTotal((cart.reduce((a,cartItem)=>a + parseFloat(cartItem.total),0)));
+    setTotal(parseFloat(subTotal*(100-discount)/100));
+    setDiscountPrice(parseFloat(subTotal*(discount)/100))
   },[discount,cart,subTotal,total,discountPrice])
 
   const handleDelete = (e,item)=>{
@@ -55,17 +58,19 @@ export default function Cart() {
 
   const handleSubmit = (e)=>{
     e.preventDefault();
-    setReceipt({id:Date.now(),cart:cart,discount:discount,subTotal:subTotal,total:total,createdDate:Date.now()})
-    console.log({id:Date.now(),cart:cart,payment:payment,discount:discount,subTotal:subTotal,total:total,createdDate:Date.now()});
+    const date = new Date(); // Get the current date
+    const timestamp = Timestamp.fromDate(date);
+    const id = uuidv4();
+    setReceipt({id:id,cart:cart,discount:parseFloat(discount),subTotal:parseFloat(subTotal),total:parseFloat(total),createdDate:timestamp})
     const dataToStore = {
-        id: Date.now(),
+        id: id,
         cart: cart,
-        discount: discount,
-        subTotal: subTotal,
+        discount: parseFloat(discount),
+        subTotal: parseFloat(subTotal),
         payment:payment,
-        total: total,
+        total: parseFloat(total),
         user:"Hong Nnurech",
-        createdDate: Date.now()
+        createdDate: timestamp
       };
       localStorage.setItem('printData', JSON.stringify(dataToStore));
       navigate("/receipt");
@@ -111,7 +116,7 @@ export default function Cart() {
                             <button onClick={(e)=>updateQty(e,item)} className=' w-6 h-6 rounded-lg bg-gray-300 text-white flex justify-center items-center'>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M11 13H5v-2h6V5h2v6h6v2h-6v6h-2z"/></svg>
                             </button>
-                            <p className='text-sm font-medium pl-3'>USD ${(item.total).toFixed(2)}</p>
+                            <p className='text-sm font-medium pl-3'>USD ${(item?.total)}</p>
                         </div>
                     )):
                     <p className='text-xs font-bold'>No Added Item !!</p>
@@ -157,7 +162,7 @@ export default function Cart() {
         </section>
         <section className='flex flex-col gap-3'>
             {/* <button disabled={cart.length == 0} onClick={createReciept}  className='w-full font-bold border-2 border-yellow-700 text-yellow-700 rounded-lg py-2 '>Reciept</button> */}
-            <button disabled={cart.length == 0} onClick={handleSubmit}  className='w-full font-bold text-white bg-yellow-700 rounded-lg py-2'>Submit</button>
+            <button disabled={cart?.length == 0} onClick={handleSubmit}  className='w-full font-bold text-white bg-yellow-700 rounded-lg py-2'>Submit</button>
         </section>
     </div>
   )
