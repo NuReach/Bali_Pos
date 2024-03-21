@@ -15,6 +15,7 @@ import { useEffect } from 'react'
 import { toast } from 'sonner'
 import { ProtectedRoute } from '../src/ProtectedRoute'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 
 function App() {
   const queryClient = new QueryClient();
@@ -38,6 +39,7 @@ function App() {
         </Route>
         <Route path="/login" element={<Login />} />
       </Routes>
+      <ReactQueryDevtools initialIsOpen={false} />
       </QueryClientProvider>
     </BrowserRouter>
     </>

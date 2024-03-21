@@ -8,7 +8,7 @@ export const functionSlice = createSlice({
     cart:[],
     showCartBoolean : false,
     showSidebarBoolean : false,
-    filterMenuKey : "all",
+    filterMenuKey : "",
     searchKey : ""
   },
   reducers :{

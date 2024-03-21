@@ -1,15 +1,26 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { filterMenu, searchMenu, showCartDailog, showSidebarDailog } from '../../functionSlice';
-import { collection, getDocs, orderBy, query } from 'firebase/firestore';
-import { db } from '../../firebase';
 import NavbarSkeleton from './NavbarSkeleton';
+import { QueryClient, useQuery } from '@tanstack/react-query';
+import { fetchCategories, fetchProducts } from '../../api';
+
+
 
 export default function Navbar() {
-  const [category,setCategory] = useState(["All","Berr"]
-  );
 
-  const route = "All Items";
+  const key = useSelector((state)=>state.function.filterMenuKey);
+  
+  const { isLoading : productsFetchingStatus, isError : productsFetchingError, data : products } = useQuery(
+    { queryKey: ['products',{key}], queryFn: ()=>fetchProducts(key) }
+  )
+
+  const { isLoading : categoriesFetchingStatus, isError : categoriesFetchingError, data : categories } = useQuery(
+    { queryKey: ['categories'], queryFn: fetchCategories }
+  )
+
+
+  
   const dispatch = useDispatch();
 
   const showCart = (e)=>{
@@ -21,35 +32,24 @@ export default function Navbar() {
     dispatch(showSidebarDailog())
   }
 
+  const queryClient = new QueryClient();
+
   const handleFilterMenu = (e,filter)=>{
     e.preventDefault();
     dispatch(filterMenu({key:filter.toLowerCase()}));
   }
 
-  const key = useSelector((state)=>state.function.filterMenuKey);
+
  
   const [search,setSearch] = useState("");
 
-  const [categories,setCategories]= useState();
 
   const handleChange = (e)=>{
     setSearch(e.target.value);
     dispatch(searchMenu({key:e.target.value}));
   }
 
-  //fetch categories
-  useEffect(() => {
-    const fetchCategories = async () => {
-      const querySnapshot = await getDocs(collection(db, "categories"));
-      const categoriesData = querySnapshot.docs.map(doc => ({
-        ...doc.data()
-      }));
-      setCategories(categoriesData);
-    }
-    fetchCategories();
-  }, [categories]);
-
- 
+  
   return (
     <nav className='p-3 pl-9 flex justify-between items-center border-b relative'>
         <section>
@@ -58,16 +58,13 @@ export default function Navbar() {
         {
           categories ? 
           <div className='lg:flex justify-between items-center gap-9 p-3 hidden  '>
-              <div>
-                  <button onClick={(e)=>handleFilterMenu(e,"all")} className={ key.toLowerCase() == "all" ? 'text-white bg-yellow-700 rounded-lg px-4 py-1 text-xs font-medium' : 'text-yellow-700 text-sm font-medium'}>ALL</button>
-              </div>
-              {
-                categories?.map((item,i)=>(
-                      <div key={i}>
-                          <button onClick={(e)=>handleFilterMenu(e,item.name.toLowerCase())} className={ key.toLowerCase() == item.name.toLowerCase() ? 'text-white bg-yellow-700 rounded-lg px-4 py-1 text-xs font-medium' : 'text-yellow-700 text-sm font-medium'}>{item.name}</button>
-                      </div>
-                  ))
-              }
+          {
+            categories?.map((item,i)=>(
+                <div key={i}>
+                    <button onClick={(e)=>handleFilterMenu(e,item.name.toLowerCase())} className={ key?.toLowerCase() == item.name.toLowerCase() ? 'text-white bg-yellow-700 rounded-lg px-4 py-1 text-xs font-medium' : 'text-yellow-700 text-sm font-medium'}>{item.name}</button>
+                </div>
+            ))
+          }
           </div> :
           <div>
             <NavbarSkeleton />

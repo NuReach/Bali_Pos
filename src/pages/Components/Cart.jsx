@@ -56,6 +56,8 @@ export default function Cart() {
     dispatch(minusCartItemReducer({id:item.id,qty:1}));
   }
 
+  
+
 
   const handleSubmit = async (e)=>{
     e.preventDefault();

@@ -3,31 +3,67 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { db } from '../../firebase';
 import { toast } from 'sonner';
+import { useMutation } from '@tanstack/react-query';
+
 
 export default function Login() {
+
+    const navigate = useNavigate();
+    // const login = async (e)=>{
+    //     e.preventDefault();
+    //     const q = query(
+    //         collection(db, "users"),
+    //         where("username", "==", username),
+    //         where("password", "==", password) 
+    //         );
+            
+    //     const querySnapshot = await getDocs(q);
+    //     const data = querySnapshot.docs.map((doc)=>(
+    //     {...doc.data()}
+    //     ))
+
+    //     if (data.length > 0) {
+    //         const user = {id:data[0].id,username:data[0].username,role:data[0].role};
+    //         localStorage.setItem('user', JSON.stringify(user));
+    //         navigate("/");
+    //         toast.success("Login Successfully")
+    //     }else{
+    //         toast.error("Invalid username and password")
+    //     }
+    // }
     const [username,setUsername] = useState("");
     const [password,setPassword] = useState("");
-    const navigate = useNavigate();
-    const login = async (e)=>{
-        e.preventDefault();
-        const q = query(
-            collection(db, "users"),
-            where("username", "==", username),
-            where("password", "==", password) 
+    const loginMutation = useMutation({
+        mutationFn: async () => {
+            const q = query(
+                collection(db, "users"),
+                where("username", "==", username),
+                where("password", "==", password)
             );
             
-        const querySnapshot = await getDocs(q);
-        const data = querySnapshot.docs.map((doc)=>(
-        {...doc.data()}
-        ))
-
-        if (data.length > 0) {
-            const user = {id:data[0].id,username:data[0].username,role:data[0].role};
-            localStorage.setItem('user', JSON.stringify(user));
-            navigate("/");
-            toast.success("Login Successfully")
-        }else{
-            toast.error("Invalid username and password")
+            const querySnapshot = await getDocs(q);
+            const data = querySnapshot.docs.map((doc) => ({ ...doc.data() }));
+            console.log(data);
+            return data;
+        },
+        onSuccess : (data) => {
+            if (data.length > 0) {
+                const userData = data[0];
+                localStorage.setItem('user', JSON.stringify(userData));
+                navigate("/");
+                toast.success("Login Successful");
+            } else {
+                toast.error("Invalid username and password");
+            }
+        },
+    });
+    
+    const login = (e) => {
+        e.preventDefault();
+        try {
+            loginMutation.mutate(); // Pass username and password here
+        } catch (error) {
+            console.log(error);
         }
     }
   return (

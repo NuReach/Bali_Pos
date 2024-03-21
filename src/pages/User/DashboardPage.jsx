@@ -3,107 +3,37 @@ import Navbar from '../Components/Navbar'
 import Sidebar from '../Components/Sidebar'
 import Perfomance from '../Components/Perfomance'
 import products from '../products';
-import { collection, getAggregateFromServer, getCountFromServer, getDocs, query, sum, where } from 'firebase/firestore';
 import { db } from '../../firebase';
 import { toast } from 'sonner';
-import jsPDF from 'jspdf';
+import { useQuery } from '@tanstack/react-query';
+import { countCategory, countOrder, countProduct, countTodayIncome, countTodayOrder, totalIncome } from '../../api';
+
 
 
 export default function DashboardPage() {
   const [data,setData] = useState(products.slice(0,5));
-  const [productCount,setProductCount] = useState(0);
-  const [categoryCount,setCategoryCount] = useState(0);
-  const [orderCount,setOrderCount] = useState(0);
-  const [orderTodayCount,setOrderTodayCount] = useState(0);
-  const [total,setTotal] = useState(0);
-  const [todayIncome,setTodayIncome] = useState(0);
   const [exportData,setExportData] = useState(0);
 
-  useEffect(()=>{
-    const countProduct = async ()=>{
-      const coll = collection(db, "products");
-      const q = query(coll);
-      const snapshot = await getCountFromServer(q);
-      setProductCount(snapshot.data().count)
-    }
-    countProduct();
-  },[])
+  const { isLoading: productsFetchingStatus, isError: productsFetchingError, data: productCount } =  useQuery(
+    { queryKey: ['productCount'], queryFn: countProduct }
+  );
+  const { isLoading: categoriesFetchingStatus, isError: categoriesFetchingError, data: categoryCount } =  useQuery(
+    { queryKey: ['categoryCount'], queryFn: countCategory }
+  );
+  const { isLoading: ordersFetchingStatus, isError: ordersFetchingError, data: orderCount } =  useQuery(
+    { queryKey: ['orderCount'], queryFn: countOrder }
+  );
+  const { isLoading: todayOrdersFetchingStatus, isError: todayOrdersFetchingError, data: orderTodayCount } = useQuery(
+    { queryKey: ['orderTodayCount'], queryFn: countTodayOrder }
+  ) ;
 
+  const { isLoading: todayIncomeFetchingStatus, isError: todayIncomeFetchingError, data: todayIncome } = useQuery(
+    { queryKey: ['todayIncome'], queryFn: countTodayIncome }
+  ) ;
 
-  useEffect(()=>{
-    const countCategory = async ()=>{
-      const coll = collection(db, "categories");
-      const q = query(coll);
-      const snapshot = await getCountFromServer(q);
-      setCategoryCount(snapshot.data().count)
-    }
-    countCategory();
-  },[])
-
-  useEffect(()=>{
-    const countOrder = async ()=>{
-      const coll = collection(db, "cart");
-      const q = query(coll);
-      const snapshot = await getCountFromServer(q);
-      setOrderCount(snapshot.data().count)
-    }
-    countOrder();
-  },[])
-
-  
-  useEffect(()=>{
-    const countTodayOrder = async () => {
-      const coll = collection(db, "cart");
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      const todayTimestamp = today.getTime();
-  
-      const tomorrow = new Date(today);
-      tomorrow.setDate(today.getDate() + 1);
-      const tomorrowTimestamp = tomorrow.getTime();
-  
-      const q = query(coll, where('createdAt',">=", todayTimestamp), where('createdAt',"<=", tomorrowTimestamp));
-      const snapshot = await getCountFromServer(q);
-      setOrderTodayCount(snapshot.data().count);
-    }
-    countTodayOrder();
-  },[])
-  
-  useEffect(()=>{
-    const countTodayIncome = async () => {
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      const todayTimestamp = today.getTime();
-      
-      const tomorrow = new Date(today);
-      tomorrow.setDate(today.getDate() + 1);
-      const tomorrowTimestamp = tomorrow.getTime();
-      
-      const coll = collection(db, "cart");
-      const q = query(coll,where('createdAt',">=", todayTimestamp), where('createdAt',"<=", tomorrowTimestamp));
-      const snapshot = await getAggregateFromServer(q, {
-        totalPrice: sum('total')
-      });
-      setTodayIncome(snapshot.data().totalPrice);
-    }
-    countTodayIncome();
-  },[])
-
-
-  useEffect(()=>{
-    const totalIncome = async ()=>{
-      const coll = collection(db, 'cart');
-      const q = query(coll);
-      const snapshot = await getAggregateFromServer(q, {
-        totalPrice: sum('total')
-      });
-      setTotal(snapshot.data().totalPrice);
-    }
-    totalIncome();
-  },[])
-
-
-
+  const { isLoading: totalIncomeFetchingStatus, isError: totalIncomeFetchingError, data: total } = useQuery(
+    { queryKey: ['total'], queryFn: totalIncome }
+  ) ;
 
 
 
@@ -154,7 +84,7 @@ export default function DashboardPage() {
                         </div>
                       </section>
                       <section>
-                        <p className='text-2xl font-bold'>USD ${total.toFixed(2)}</p>
+                        <p className='text-2xl font-bold'>USD ${total?.toFixed(2)}</p>
                       </section>
                       {/* <section>
                         <p className='text-xs text-gray-500'>Sale 23 Products</p>

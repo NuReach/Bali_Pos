@@ -74,7 +74,7 @@ export default function ProductEditPage() {
             cost: parseFloat(cost),
             stock: parseInt(stock),
             discount: parseFloat(discount),
-            category: category,
+            category: category.toLowerCase(),
             createdAt : Date.now(),
           });
           console.log("Product updated successfully!");

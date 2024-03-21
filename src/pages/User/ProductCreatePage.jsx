@@ -39,7 +39,7 @@ export default function ProductCreatePage() {
                 price : parseFloat(price),
                 cost : parseFloat(cost),
                 discount : parseFloat(discount),
-                category : category,
+                category : category.toLowerCase(),
                 stock : parseInt(stock),
                 createdAt: Date.now()
               });
