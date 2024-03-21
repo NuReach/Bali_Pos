@@ -31,7 +31,7 @@ export default function Home() {
     if (key == "all") {
      setFilterData(data);
     }else{
-     setFilterData(data.filter((item)=>item.category.toLowerCase()==key.toLowerCase()));
+     setFilterData(data?.filter((item)=>item.category.toLowerCase()==key.toLowerCase()));
     }
   },[key])
 
@@ -43,7 +43,7 @@ export default function Home() {
     if (searchKey == "") {
      setFilterData(data);
     }else{
-     setFilterData(data.filter((item)=>item.name.toLowerCase().includes(searchKey.toLowerCase())));
+     setFilterData(data?.filter((item)=>item.name.toLowerCase().includes(searchKey.toLowerCase())));
     }
   },[searchKey])
   
@@ -141,7 +141,7 @@ export default function Home() {
                           <p className='font-medium text-sm truncate'>{item.name}</p>
                           <p className='font-medium text-xs text-gray-400 truncate w-32'>{item.category}</p>
                           <p className='font-medium text-sm text-yellow-700 truncate'>USD ${item.price}</p>
-                          
+                        
                         </div>
                       </div>
                     )) :

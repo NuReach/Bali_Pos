@@ -6,7 +6,7 @@ import { db } from '../../firebase';
 import NavbarSkeleton from './NavbarSkeleton';
 
 export default function Navbar() {
-  const [category,setCategory] = useState(["All","Fruits", "Dairy", "Bakery", "Vegetables", "Meat", "Grains", "Breakfast", "Seafood"]
+  const [category,setCategory] = useState(["All","Berr"]
   );
 
   const route = "All Items";
@@ -62,7 +62,7 @@ export default function Navbar() {
                   <button onClick={(e)=>handleFilterMenu(e,"all")} className={ key.toLowerCase() == "all" ? 'text-white bg-yellow-700 rounded-lg px-4 py-1 text-xs font-medium' : 'text-yellow-700 text-sm font-medium'}>ALL</button>
               </div>
               {
-                  categories?.map((item,i)=>(
+                categories?.map((item,i)=>(
                       <div key={i}>
                           <button onClick={(e)=>handleFilterMenu(e,item.name.toLowerCase())} className={ key.toLowerCase() == item.name.toLowerCase() ? 'text-white bg-yellow-700 rounded-lg px-4 py-1 text-xs font-medium' : 'text-yellow-700 text-sm font-medium'}>{item.name}</button>
                       </div>

@@ -40,7 +40,7 @@ export default function ProductCreatePage() {
                 cost : parseFloat(cost),
                 discount : parseFloat(discount),
                 category : category,
-                stock : stock,
+                stock : parseInt(stock),
                 createdAt: Date.now()
               });
             toast.success("Product created successfully!");

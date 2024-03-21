@@ -70,11 +70,12 @@ export default function ProductEditPage() {
           await updateDoc(productRef, {
             name: name,
             image: image,
-            price: price,
-            cost: cost,
-            stock: stock,
-            discount: discount,
-            category: category
+            price: parseFloat(price),
+            cost: parseFloat(cost),
+            stock: parseInt(stock),
+            discount: parseFloat(discount),
+            category: category,
+            createdAt : Date.now(),
           });
           console.log("Product updated successfully!");
           toast.success("Product updated successfully!");

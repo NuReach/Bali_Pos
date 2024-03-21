@@ -50,7 +50,6 @@ export default function Receipt() {
     navigate("/");
   }
 
-  console.log(printData);
 
   return (
     <div className='w-full bg-gray-300 flex justify-center items-center '>

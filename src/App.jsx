@@ -13,13 +13,15 @@ import UserEditPage from './pages/User/UserEditPage'
 import HistoryDetail from './pages/User/HistoryDetail'
 import { useEffect } from 'react'
 import { toast } from 'sonner'
-import { ProtectedRoute } from './pages/ProtectedRoute'
+import { ProtectedRoute } from '../src/ProtectedRoute'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
 function App() {
-
+  const queryClient = new QueryClient();
   return (
     <>
     <BrowserRouter>
+      <QueryClientProvider client={queryClient}>
       <Routes> 
         <Route element={<ProtectedRoute />} >
           <Route path="/" element={<Home />} />
@@ -36,6 +38,7 @@ function App() {
         </Route>
         <Route path="/login" element={<Login />} />
       </Routes>
+      </QueryClientProvider>
     </BrowserRouter>
     </>
   )

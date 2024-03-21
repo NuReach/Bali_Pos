@@ -2,7 +2,7 @@ import React, {useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { deleteCartItemReducer, minusCartItemReducer, updateCartItemReducer } from '../../functionSlice';
 import { useNavigate } from 'react-router-dom';
-import { Timestamp, doc, setDoc } from 'firebase/firestore';
+import { Timestamp, doc, setDoc, updateDoc } from 'firebase/firestore';
 import { v4 as uuidv4 } from 'uuid';
 import { toast } from 'sonner';
 import { db } from '../../firebase';
@@ -64,18 +64,7 @@ export default function Cart() {
     }else{
     const id = uuidv4();
       try {
-        toast.loading("Please wait for a moment")
-        const dataToStore = {
-            id: id,
-            cartItems: cart,
-            discount: parseFloat(discount),
-            subTotal: parseFloat(subTotal),
-            payment:payment,
-            total: parseFloat(total),
-            user: user.username,
-            createdAt: Date.now()
-          };
-            await setDoc(doc(db, "cart", id), {
+            const dataToStore = {
                 id: id,
                 cartItems: cart,
                 discount: parseFloat(discount),
@@ -84,11 +73,32 @@ export default function Cart() {
                 total: parseFloat(total),
                 user: user.username,
                 createdAt: Date.now()
+            };
+        await setDoc(doc(db, "cart", id), {
+            id: id,
+            cartItems: cart,
+            discount: parseFloat(discount),
+            subTotal: parseFloat(subTotal),
+            payment:payment,
+            total: parseFloat(total),
+            user: user.username,
+            createdAt: Date.now()
+        });
+
+            cart?.forEach( async (cartItems) => {
+                const productId = cartItems.item.id;
+                const updatedStock = parseInt(cartItems.item.stock)-parseInt(cartItems.qty);
+                console.log(productId,updatedStock);
+                const productRef = doc(db, "products", productId);
+                await updateDoc(productRef, {
+                    stock: updatedStock,
+                  });
+                  console.log("Product updated successfully!",productId);
             });
             toast.success("Order created successfully!");
             localStorage.setItem('printData', JSON.stringify(dataToStore));
-            console.log(dataToStore);
             navigate("/receipt");
+            toast.dismiss();
         } catch (error) {
             console.log(error);
             toast.error('Error creating order ', error)
