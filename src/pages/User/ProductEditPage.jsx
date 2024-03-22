@@ -7,84 +7,65 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import LoadingSkeleton from '../Components/LoadingSkeleton';
 import FormSkeleton from '../Components/FormSkeleton';
+import { fetchCategories, getProductById, updateProductById } from '../../api';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 
 export default function ProductEditPage() {
-    const [name,setName] = useState("");
-    const [image, setImage] = useState(""); // State for image
-    const [price, setPrice] = useState("");   // State for price
-    const [cost, setCost] = useState("");     // State for cost
-    const [stock, setStock] = useState("");   // State for stock
-    const [category, setCategory] = useState(""); // State for category
-    const [discount, setDiscount] = useState(""); 
-    const {id} = useParams();   
-    const [categories, setCategories] = useState([]);
-    const navigate = useNavigate();
 
-    useEffect(() => {
-        const getProduct = async () => {
-          try {
-            const productRef = doc(db, "products", id); // Reference to the product document
-            const productSnap = await getDoc(productRef);
-            if (productSnap.exists) {
-              setName(productSnap.data().name);
-              setImage(productSnap.data().image);
-              setPrice(productSnap.data().price);
-              setCost(productSnap.data().cost);
-              setStock(productSnap.data().stock);
-              setDiscount(productSnap.data().discount);
-              setCategory(productSnap.data().category);
-            } else {
-              console.log("Product not found"); // Handle product not found scenario
-            }
-          } catch (error) {
-            console.error("Error fetching product:", error);
-          }
-        };
-      
-        getProduct();
-      }, [id]);
+  const [name,setName] = useState("");
+  const [image, setImage] = useState(""); // State for image
+  const [price, setPrice] = useState("");   // State for price
+  const [cost, setCost] = useState("");     // State for cost
+  const [stock, setStock] = useState("");   // State for stock
+  const [category, setCategory] = useState(""); // State for category
+  const [discount, setDiscount] = useState(""); 
+  const {id} = useParams();   
+  const navigate = useNavigate();
+
+  const queryClient = useQueryClient();
+
+  const { isLoading : productFetchingStatus, isError : productFetchingError, data : product } = useQuery(
+    { queryKey: ['product',{id}], queryFn: ()=> getProductById(id)}
+  )
+   
+  const { isLoading : categoriesFetchingStatus, isError : categoriesFetchingError, data : categories } = useQuery(
+    { queryKey: ['categories'], queryFn: ()=> fetchCategories() }
+  )
+
+  useEffect(()=>{
+    setName(product?.name);
+    setImage(product?.image);
+    setPrice(product?.price);
+    setCost(product?.cost);
+    setStock(product?.stock);
+    setCategory(product?.category);
+    setDiscount(product?.discount);
+  },[product])
+
+  console.log(category);
+
+  const handleUpdateProduct = async (e) => {
+    e.preventDefault();
+    await updateProductMutation({id,name,image,price,cost,stock,discount,category})
+  };
+
+  
+  const { mutateAsync : updateProductMutation  } = useMutation({
+    mutationFn : updateProductById,
+    onSuccess : ()=>{
+        toast.success("Product Updated Successfully");
+        queryClient.invalidateQueries(['productsPage']);
+        queryClient.invalidateQueries(['products']);
+        navigate("/product")
+    },
+    onError : ()=>{
+        toast.error("error")
+    }
+  })
 
 
 
-      useEffect(() => {
-        const getCategories = async () => {
-          try {
-            const categoriesRef = collection(db, "categories"); // Reference to the categories collection
-            const categoriesSnap = await getDocs(categoriesRef);
-            const allCategories = categoriesSnap.docs.map(doc => doc.data());
-            setCategories(allCategories);
-          } catch (error) {
-            console.error("Error fetching categories:", error);
-          }
-        };
-      
-        getCategories();
-      }, [db])
-
-
-      const handleUpdateProduct = async (e) => {
-        e.preventDefault();
-        const productRef = doc(db, "products", id);
-        try {
-          await updateDoc(productRef, {
-            name: name,
-            image: image,
-            price: parseFloat(price),
-            cost: parseFloat(cost),
-            stock: parseInt(stock),
-            discount: parseFloat(discount),
-            category: category.toLowerCase(),
-            createdAt : Date.now(),
-          });
-          console.log("Product updated successfully!");
-          toast.success("Product updated successfully!");
-          navigate("/product");
-        } catch (error) {
-          console.error("Error updating product:", error);
-          toast.error("Error updating product");
-        }
-      };
 
   return (
     <div>
@@ -97,8 +78,7 @@ export default function ProductEditPage() {
                         <p className='text-lg font-bold'>Create New Product</p>
                     </section>
                     {
-                        categories != null && name != "" ? 
-
+                        categories && product ? 
                         <section className='mt-3'>
                             <form action="" className='gap-3 flex flex-col'>
                                 <div>
@@ -129,18 +109,17 @@ export default function ProductEditPage() {
                                 </div>
                                 <div>
                                         <label htmlFor="category" className="block mb-2 text-sm font-medium text-gray-900 ">Category</label>
-                                            <select className='block w-full p-2 py-3 text-gray-900 border-2 bg-white rounded-lg text-xs'  name="category" id="category" value={category} onChange={(e)=>setCategory(e.target.value)} required>
+                                          <select className='block w-full p-2 py-3 text-gray-900 border-2 bg-white rounded-lg text-xs'  name="category" id="category" value={category} onChange={(e)=>setCategory(e.target.value)} required>
                                             {
                                                 categories?.map((item,i)=>(
-                                                    <option key={i} selected={item.name == category  }  value={item.name}>{item.name}</option>
+                                                    <option className='uppercase' key={i}  value={item.name}>{item.name}</option>
                                                 ))
-                                            }
+                                            } 
                                         </select>
                                 </div>
                                 <div className='mt-3'>
                                     <button  onClick={handleUpdateProduct}  className='w-full font-bold text-white bg-yellow-700 rounded-lg py-2'>Submit</button>
                                 </div>
-
                             </form>
                         </section>
                         :

@@ -6,8 +6,8 @@ import { collection, deleteDoc, doc, getDocs, onSnapshot, orderBy, query } from 
 import { db } from '../../firebase';
 import { toast } from 'sonner';
 import LoadingSkeleton from '../Components/LoadingSkeleton';
-import { countProduct, fetchProductWithPagination } from '../../api';
-import { useQuery } from '@tanstack/react-query';
+import { countProduct, deleteProduct, fetchProductWithPagination } from '../../api';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 export default function ProductPage() {
   const [data,setData] = useState(null);
@@ -19,9 +19,26 @@ export default function ProductPage() {
   const [btn,setBtn] = useState(null);
   const [shot,setSnapShot] = useState(null);
 
+  
   const [pageSize,setPageSize] = useState(9);
+  
+  const queryClient = useQueryClient();
 
   const navigate = useNavigate();
+
+  const { isLoading: productsCountStatus, isError: productsCountError, data: productCount } =  useQuery(
+    { queryKey: ['productCount'] , queryFn : ()=>countProduct()}
+  );
+  
+  
+  const { isLoading : productsFetchingStatus, isError : productsFetchingError, data : productsPage } = useQuery(
+    { queryKey: ['productsPage',{page}] , 
+      queryFn: ()=>fetchProductWithPagination(btn,sortField,sortDir,shot,pageSize), 
+      cacheTime : 0,
+      staleTime : Infinity,
+     }
+  );
+
 
   const handleClick = (e)=>{
     e.preventDefault();
@@ -32,31 +49,24 @@ export default function ProductPage() {
     alert(slug);
   }
 
-  const deleteProduct = async (e,id)=>{
+  
+  const deleteProductBtn = async (e,id)=>{
     if (window.confirm("Do you really want to delete?")) {
-      await deleteDoc(doc(db, "products", id));
-      toast.success("Product deleted successfully")
+      await deleteProductMutation({id});
     }
   }
 
-  const { isLoading: productsCountStatus, isError: productsCountError, data: productCount } =  useQuery(
-    { queryKey: ['productCount'] , queryFn : countProduct}
-  );
-  
-  
-  const { isLoading : productsFetchingStatus, isError : productsFetchingError, data : productsPage } = useQuery(
-    { queryKey: ['productsPage',{page}] , 
-      queryFn: ()=>fetchProductWithPagination(btn,sortField,sortDir,shot,pageSize), 
-      cacheTime : 0,
-      staleTime : Infinity,
-     }
-    );
-    
-    
- 
-
-
-  console.log(page);
+  const { mutateAsync : deleteProductMutation  } = useMutation({
+    mutationFn : deleteProduct,
+    onSuccess : ()=>{
+        toast.success("Product deleted Successfully");
+        queryClient.invalidateQueries(['productsPage']);
+        queryClient.invalidateQueries(['products']);
+    },
+    onError : ()=>{
+        toast.error("error")
+    }
+  })
 
   return (
     <div>
@@ -110,7 +120,7 @@ export default function ProductPage() {
                             <p className='w-16 font-medium text-gray-600 line-clamp-1  hidden lg:block'>{item.discount}%</p>
                             <p className='w-48 flex gap-3 flex-wrap justify-end '>  
                               <button onClick={()=>navigate(`/product/edit/${item.id}`)} className='font-medium text-xs py-1 rounded-full px-4 text-white bg-yellow-700 w-fit  my-1'>Edit</button>
-                              <button onClick={ (e)=>deleteProduct(e,item.id)} className='font-medium text-xs py-1 rounded-full px-4 text-white bg-red-500 w-fit  my-1'>Delete</button> 
+                              <button onClick={ (e)=>deleteProductBtn(e,item.id)} className='font-medium text-xs py-1 rounded-full px-4 text-white bg-red-500 w-fit  my-1'>Delete</button> 
                             </p>
                         </div>
                     )) : 
@@ -123,10 +133,15 @@ export default function ProductPage() {
                     <LoadingSkeleton />
                   </div>
               }
-              <div className='flex gap-6 w-full justify-end'>
+              <div className='flex gap-6 w-full justify-end items-center'>
+              {
+                productsPage &&
+                <p className='text-xs font-medium text-gray-600 line-clamp-1  hidden lg:block'>Products Total : { pageSize*page > productCount ? productCount + "/" +  productCount : pageSize * page + "/" + productCount}</p>
+              }
               { page>1 &&  productsPage && <div className='flex justify-end'>
                   <button onClick={ async()=>{
                     setPage(prevPage => prevPage-1);
+                    setBtn("back");
                     setSnapShot(productsPage[0].querySnapshot);
                     await fetchProductWithPagination("back",sortField,sortDir,productsPage[0].querySnapshot,pageSize);
                     }}  className='font-medium text-xs py-1 rounded-md px-4 text-white bg-black  my-1 hidden xl:block'>Back</button>

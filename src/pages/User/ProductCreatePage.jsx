@@ -8,7 +8,7 @@ import { db } from '../../firebase';
 import { v4 as uuidv4 } from 'uuid';
 import LoadingSkeleton from '../Components/LoadingSkeleton';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { createNewProduct, fetchCategories } from '../../api';
+import { createCategory, createNewProduct, deleteCategory, fetchCategories } from '../../api';
 
 
 export default function ProductCreatePage() {
@@ -29,6 +29,17 @@ export default function ProductCreatePage() {
 
     const queryClient = useQueryClient();
 
+      
+    const { isLoading : categoriesFetchingStatus, isError : categoriesFetchingError, data : categories } = useQuery(
+        { queryKey: ['categories'], queryFn : ()=>fetchCategories()}
+      )
+
+    
+    const createProduct = async (e)=>{
+        e.preventDefault();
+        await createProductMutation({name,image,price,cost,discount,category,stock})
+        }
+    
 
     const { mutateAsync : createProductMutation  } = useMutation({
         mutationFn : createNewProduct,
@@ -50,35 +61,46 @@ export default function ProductCreatePage() {
       })
 
 
-      const createProduct = async (e)=>{
+    
+    const createCategoryBtn = async (e)=>{
         e.preventDefault();
-        await createProductMutation({name,image,price,cost,discount,category,stock})
-    }
-
-
-    const createCategory = async (e)=>{
         const id = uuidv4();
-        e.preventDefault();
-        try {
-            await setDoc(doc(db, "categories", id), {
-                id: id,
-                name: categoryName,
-                createdAt: Date.now(),
-              });
-            toast.success("Category created successfully!");
+        await createCategoryMutation({id,categoryName});   
+    }
+    
+    const { mutateAsync : createCategoryMutation  } = useMutation({
+        mutationFn : createCategory,
+        onSuccess : ()=>{
             setCategoryName("");
-            navigate("/product/create?page=category");
-          } catch (error) {
-            console.log(error);
-            toast.error('Error creating category ', error)
+            navigate("/product/create?page=product");
+            queryClient.invalidateQueries(['productsPage']);
+            queryClient.invalidateQueries(['categories']);
+            queryClient.invalidateQueries(['product']);
+            toast.success("Add Product Succesfully");
+        },
+        onError : ()=>{
+            toast.error("error")
+        }
+      })
+
+
+    const deleteCategoryBtn = async (e,id)=>{
+        e.preventDefault();
+        if (window.confirm("Do you really want to delete?")) {
+            await deleteCategoryMutation({id});     
         }
     }
 
-    //fetch Categories
-    const { isLoading : categoriesFetchingStatus, isError : categoriesFetchingError, data : categories } = useQuery(
-        { queryKey: ['categories'], queryFn : ()=>fetchCategories()}
-      )
-
+    const { mutateAsync : deleteCategoryMutation  } = useMutation({
+        mutationFn : deleteCategory,
+        onSuccess : ()=>{
+            queryClient.invalidateQueries(['categories']);
+            toast.success("Category Delete Succesfully");
+        },
+        onError : ()=>{
+            toast.error("error")
+        }
+      })
     
 
 
@@ -148,7 +170,7 @@ export default function ProductCreatePage() {
                                 <input value={categoryName} onChange={(e)=>setCategoryName(e.target.value)} type="text" id="categoryName" name="categoryName" autoComplete='off' className="block w-full p-2 text-gray-900 border-2 bg-white rounded-lg   " />
                             </div>
                             <div className='mt-3'>
-                                <button onClick={createCategory} disabled={categoryName==""}  className='w-full font-bold text-white bg-yellow-700 rounded-lg py-2'>Submit</button>
+                                <button onClick={createCategoryBtn} disabled={categoryName==""}  className='w-full font-bold text-white bg-yellow-700 rounded-lg py-2'>Submit</button>
                             </div>
                             <div className='p-6 mt-3 border rounded-lg shadow-lg '>
                                 <header className='font-bold text-sm flex justify-between'>
@@ -167,13 +189,7 @@ export default function ProductCreatePage() {
                                                 <p className='font-medium text-gray-600 line-clamp-1 truncate'>{item.name}</p>                      
                                                 </div>
                                                 <p className='w-20'>  
-                                                <button onClick={ async()=>{
-                                                    if (window.confirm("Do you really want to delete?")) {
-                                                        await deleteDoc(doc(db, "categories", item.id));
-                                                        toast.success("Deleted Category Successfully");
-                                                        //navigate("/product/create?page=product")
-                                                        }
-                                                }} className='font-medium text-xs py-1 rounded-full px-4 text-white bg-red-500 w-fit  my-1'>Delete</button> 
+                                                <button onClick={ (e) => deleteCategoryBtn(e,item.id) } className='font-medium text-xs py-1 rounded-full px-4 text-white bg-red-500 w-fit  my-1'>Delete</button> 
                                                 </p>
                                             </div>
                                         )) : 
@@ -187,9 +203,6 @@ export default function ProductCreatePage() {
                                         <LoadingSkeleton />
                                     </div>
                                 }
-                                {/* <div className='w-full flex justify-end'>
-                                    <button className='font-medium text-xs py-1 rounded-md px-4 text-white bg-black  my-1 hidden xl:block'>Next</button>
-                                </div> */}
                             </div>
                        </section>
                     } 

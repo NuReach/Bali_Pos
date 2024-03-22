@@ -1,4 +1,4 @@
-import { collection, getDocs, limit, getAggregateFromServer, getCountFromServer, sum, orderBy, query, where, updateDoc, setDoc, doc, startAfter, endBefore } from 'firebase/firestore';
+import { collection, getDocs, limit, getAggregateFromServer, getCountFromServer, sum, orderBy, query, where, updateDoc, setDoc, doc, startAfter, endBefore, deleteDoc, getDoc } from 'firebase/firestore';
 import { db } from './firebase';
 import { v4 as uuidv4 } from 'uuid';
 import { useNavigate } from 'react-router-dom';
@@ -93,7 +93,6 @@ export const fetchProductWithPagination = async (btn, sortField, sortDir,snapSho
 
   let q;
   if ( btn == "next" && snapShot  ) {
-    console.log("next",snapShot);
     const lastVisible = snapShot.docs[snapShot.docs.length-1]
     q = query(
       collection(db, "products"),
@@ -102,8 +101,8 @@ export const fetchProductWithPagination = async (btn, sortField, sortDir,snapSho
       limit(pageSize)
     );
   }else if(btn == "back" && snapShot){
-    console.log("back",snapShot);
-    const lastVisible = snapShot.docs[snapShot.docs.length-pageSize];
+    const lastVisible = snapShot.docs[0];
+    console.log(snapShot.docs.length,pageSize);
     q = query(
       collection(db, "products"),
       orderBy(sortField, sortDir),
@@ -122,7 +121,6 @@ export const fetchProductWithPagination = async (btn, sortField, sortDir,snapSho
   const data = querySnapshot.docs.map(doc => ({
     ...doc.data(),querySnapshot:querySnapshot
   }));
-  console.log(data);
   return data;
 }
  
@@ -132,7 +130,7 @@ export const createNewProduct = async (state) => {
         try {
           await setDoc(doc(db, "products", id), {
             id: id,
-            name: name,
+            name: name.toLowerCase(),
             image : image,
             price : parseFloat(price),
             cost : parseFloat(cost),
@@ -145,7 +143,46 @@ export const createNewProduct = async (state) => {
             console.log(error);
         }
 }
+
+export const createCategory = async (state) => {
+  const {id,categoryName} = state;
+  await setDoc(doc(db, "categories", id), {
+    id: id,
+    name: categoryName,
+    createdAt: Date.now(),
+  });
+}
+
+export const deleteCategory = async (state)=>{
+  const {id} = state;
+  await deleteDoc(doc(db, "categories", id));
+} 
   
+export const deleteProduct = async (state)=>{
+  const {id} = state;
+  await deleteDoc(doc(db, "products", id));
+}
+
+export const getProductById = async (id)=>{
+  const productRef = doc(db, "products", id); // Reference to the product document
+  const productSnap = await getDoc(productRef);
+  return productSnap.data();
+}
+
+export const updateProductById = async (state)=>{
+  const {id,name,image,price,cost,stock,discount,category} =state;
+  await updateDoc(doc(db, "products", id), {
+    name: name,
+    image: image,
+    price: parseFloat(price),
+    cost: parseFloat(cost),
+    stock: parseInt(stock),
+    discount: parseFloat(discount),
+    category: category.toLowerCase(),
+    createdAt : Date.now(),
+  })
+}
+
 //dashnboard count
 export const countProduct = async ()=>{
     const coll = collection(db, "products");

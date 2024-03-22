@@ -6,6 +6,7 @@ import { addToCartReducer } from '../../functionSlice';
 import Sidebar from '../Components/Sidebar';
 import LoadingSkeleton from '../Components/LoadingSkeleton';
 import { useQuery } from '@tanstack/react-query';
+import { fetchCategories, fetchProducts } from '../../api';
 
 
 
@@ -18,11 +19,11 @@ export default function Home() {
 
 
   const { isLoading : productsFetchingStatus, isError : productsFetchingError, data : products } = useQuery(
-    { queryKey: ['products',{key}] }
+    { queryKey: ['products',{key}] , queryFn: ()=>fetchProducts(key) }
   )
 
   const { isLoading : categoriesFetchingStatus, isError : categoriesFetchingError, data : categories } = useQuery(
-    { queryKey: ['categories']}
+    { queryKey: ['categories'],queryFn: ()=> fetchCategories() }
   )
 
   const addToCart = (e,item)=>{
