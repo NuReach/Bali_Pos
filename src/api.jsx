@@ -1,18 +1,19 @@
-import { collection, getDocs, limit, getAggregateFromServer, getCountFromServer, sum, orderBy, query, where } from 'firebase/firestore';
+import { collection, getDocs, limit, getAggregateFromServer, getCountFromServer, sum, orderBy, query, where, updateDoc, setDoc, doc, startAfter, endBefore } from 'firebase/firestore';
 import { db } from './firebase';
+import { v4 as uuidv4 } from 'uuid';
+import { useNavigate } from 'react-router-dom';
 
+
+//navbar product and category
 export const fetchProducts = async (key) => {
     let q;
-    console.log(key);
     if (key.length === 0) {
-      console.log("no key");
        q = query(
         collection(db, "products"),
         orderBy("name", "asc"),
         limit(18)
       );
     } else {
-      console.log(" key");
        q = query(
         collection(db, "products"),
         orderBy("name", "asc"),
@@ -25,7 +26,7 @@ export const fetchProducts = async (key) => {
     const data = querySnapshot.docs.map(doc => ({
       ...doc.data()
     }));
-    console.log(data);
+    
     return data;
   }
   
@@ -41,6 +42,111 @@ export const fetchCategories = async () => {
     return data;
   }
 
+// cart update product stock and add to cart
+export const updateToCart = async (state) => {
+  
+  const {cart,discount,subTotal,total,payment,user} = state;
+
+  const id = uuidv4();
+  const docRef = doc(db, "cart", id);
+  try {
+    // Save cart details to Firestore
+    await setDoc(docRef, {
+      id: id,
+      cartItems: cart,
+      discount: parseFloat(discount),
+      subTotal: parseFloat(subTotal),
+      payment: payment,
+      total: parseFloat(total),
+      user: user.username,
+      createdAt: Date.now()
+    });
+
+    const updateStockPromises = cart.map(async (cartItem) => {
+      const productId = cartItem.item.id;
+      const updatedStock = parseInt(cartItem.item.stock) - parseInt(cartItem.qty);
+      const productRef = doc(db, "products", productId);
+      await updateDoc(productRef, { stock: updatedStock });
+    });
+    
+    await Promise.all(updateStockPromises);
+
+    const dataToStore = {
+      id: id,
+      cartItems: cart,
+      discount: parseFloat(discount),
+      subTotal: parseFloat(subTotal),
+      payment: payment,
+      total: parseFloat(total),
+      user: user.username,
+      createdAt: Date.now()
+    };
+    localStorage.setItem('printData', JSON.stringify(dataToStore));
+  } catch (error) {
+    console.error("Error updating cart:", error);
+    throw error; 
+  }
+ };
+
+//product page
+export const fetchProductWithPagination = async (btn, sortField, sortDir,snapShot,pageSize) => {
+
+  let q;
+  if ( btn == "next" && snapShot  ) {
+    console.log("next",snapShot);
+    const lastVisible = snapShot.docs[snapShot.docs.length-1]
+    q = query(
+      collection(db, "products"),
+      orderBy(sortField, sortDir),
+      startAfter(lastVisible),
+      limit(pageSize)
+    );
+  }else if(btn == "back" && snapShot){
+    console.log("back",snapShot);
+    const lastVisible = snapShot.docs[snapShot.docs.length-pageSize];
+    q = query(
+      collection(db, "products"),
+      orderBy(sortField, sortDir),
+      endBefore(lastVisible),
+      limit(pageSize)
+    );
+  }else {
+    q = query(
+      collection(db, "products"),
+      orderBy(sortField, sortDir),
+      limit(pageSize)
+    );
+  }
+
+  const querySnapshot = await getDocs(q);
+  const data = querySnapshot.docs.map(doc => ({
+    ...doc.data(),querySnapshot:querySnapshot
+  }));
+  console.log(data);
+  return data;
+}
+ 
+export const createNewProduct = async (state) => {
+  const {name,image,price,cost,discount,category,stock} = state;
+      const id = uuidv4();
+        try {
+          await setDoc(doc(db, "products", id), {
+            id: id,
+            name: name,
+            image : image,
+            price : parseFloat(price),
+            cost : parseFloat(cost),
+            discount : parseFloat(discount),
+            category : category.toLowerCase(),
+            stock : parseInt(stock),
+            createdAt: Date.now()
+          });
+          } catch (error) {
+            console.log(error);
+        }
+}
+  
+//dashnboard count
 export const countProduct = async ()=>{
     const coll = collection(db, "products");
     const q = query(coll);

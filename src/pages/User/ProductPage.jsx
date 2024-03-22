@@ -6,11 +6,23 @@ import { collection, deleteDoc, doc, getDocs, onSnapshot, orderBy, query } from 
 import { db } from '../../firebase';
 import { toast } from 'sonner';
 import LoadingSkeleton from '../Components/LoadingSkeleton';
+import { countProduct, fetchProductWithPagination } from '../../api';
+import { useQuery } from '@tanstack/react-query';
 
 export default function ProductPage() {
   const [data,setData] = useState(null);
   const [filter,setFilter] = useState(false);
+
+  const [sortField,setSortField] = useState("createdAt");
+  const [sortDir,setSortDir] = useState("desc")
+  const [page,setPage] = useState(1);
+  const [btn,setBtn] = useState(null);
+  const [shot,setSnapShot] = useState(null);
+
+  const [pageSize,setPageSize] = useState(9);
+
   const navigate = useNavigate();
+
   const handleClick = (e)=>{
     e.preventDefault();
     setFilter(!filter)
@@ -27,21 +39,24 @@ export default function ProductPage() {
     }
   }
 
+  const { isLoading: productsCountStatus, isError: productsCountError, data: productCount } =  useQuery(
+    { queryKey: ['productCount'] , queryFn : countProduct}
+  );
   
-  useEffect(() => {
-    const fetchProducts = async () => {
-      const querySnapshot = await getDocs(collection(db, "products"));
-      const data = querySnapshot.docs.map(doc => ({
-        ...doc.data()
-      }));
-      setData(data);
-    }
-    fetchProducts();
-  }, [deleteProduct]);
   
+  const { isLoading : productsFetchingStatus, isError : productsFetchingError, data : productsPage } = useQuery(
+    { queryKey: ['productsPage',{page}] , 
+      queryFn: ()=>fetchProductWithPagination(btn,sortField,sortDir,shot,pageSize), 
+      cacheTime : 0,
+      staleTime : Infinity,
+     }
+    );
+    
+    
+ 
 
 
-
+  console.log(page);
 
   return (
     <div>
@@ -79,10 +94,10 @@ export default function ProductPage() {
                   <p className='w-48 flex justify-end'>State</p>
               </header>
               {
-                data ? 
+                productsPage ? 
                 <div>
                   {
-                    data?.length >0 ? data?.map((item,i)=>(
+                    productsPage?.length >0 ? productsPage?.map((item,i)=>(
                         <div key={i} className='font-bold text-sm flex justify-between items-center my-6 border-b-2 pb-3'>
                             <p className='w-12'>{i+1}</p>
                             <div className='lg:w-48'>
@@ -104,15 +119,27 @@ export default function ProductPage() {
                     </div>
                 }
                 </div> :
-                  <div className='flex h-full justify-center items-center'>
+                  <div className='flex mt-96 justify-center items-center'>
                     <LoadingSkeleton />
                   </div>
               }
-              
-  
-              {/* <div className='w-full flex justify-end'>
-                  <button className='font-medium text-xs py-1 rounded-md px-4 text-white bg-black  my-1 hidden xl:block'>Next</button>
-              </div> */}
+              <div className='flex gap-6 w-full justify-end'>
+              { page>1 &&  productsPage && <div className='flex justify-end'>
+                  <button onClick={ async()=>{
+                    setPage(prevPage => prevPage-1);
+                    setSnapShot(productsPage[0].querySnapshot);
+                    await fetchProductWithPagination("back",sortField,sortDir,productsPage[0].querySnapshot,pageSize);
+                    }}  className='font-medium text-xs py-1 rounded-md px-4 text-white bg-black  my-1 hidden xl:block'>Back</button>
+              </div>}
+              { pageSize * page < productCount &&  productsPage && <div className=' flex justify-end'>
+                  <button onClick={ async ()=>{
+                    setPage(prevPage => prevPage+1)
+                    setBtn("next");
+                    setSnapShot(productsPage[0].querySnapshot);
+                    await fetchProductWithPagination("next",sortField,sortDir,productsPage[0].querySnapshot,pageSize)
+                    }}  className='font-medium text-xs py-1 rounded-md px-4 text-white bg-black  my-1 hidden xl:block'>Next</button>
+              </div>}
+              </div>
           </div>
         </div>
       </div>

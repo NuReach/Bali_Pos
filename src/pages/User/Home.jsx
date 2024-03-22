@@ -27,7 +27,6 @@ export default function Home() {
 
   const addToCart = (e,item)=>{
     e.preventDefault();
-    console.log(item);
     dispatch(addToCartReducer({item}));
   }
 

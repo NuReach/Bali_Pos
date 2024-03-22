@@ -7,6 +7,8 @@ import { toast } from 'sonner';
 import { db } from '../../firebase';
 import { v4 as uuidv4 } from 'uuid';
 import LoadingSkeleton from '../Components/LoadingSkeleton';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { createNewProduct, fetchCategories } from '../../api';
 
 
 export default function ProductCreatePage() {
@@ -25,25 +27,12 @@ export default function ProductCreatePage() {
     
     const [categoryName, setCategoryName] = useState("");
 
-    const [categories, setCategories] = useState();
+    const queryClient = useQueryClient();
 
 
-    const createProduct = async (e)=>{
-        e.preventDefault();
-        const id = uuidv4();
-        try {
-            await setDoc(doc(db, "products", id), {
-                id: id,
-                name: name,
-                image : image,
-                price : parseFloat(price),
-                cost : parseFloat(cost),
-                discount : parseFloat(discount),
-                category : category.toLowerCase(),
-                stock : parseInt(stock),
-                createdAt: Date.now()
-              });
-            toast.success("Product created successfully!");
+    const { mutateAsync : createProductMutation  } = useMutation({
+        mutationFn : createNewProduct,
+        onSuccess : ()=>{
             setName("");
             setImage("");
             setPrice("");
@@ -51,11 +40,21 @@ export default function ProductCreatePage() {
             setDiscount("");
             setCategory("");
             setStock("");
-          } catch (error) {
-            console.log(error);
-            toast.error('Error creating product ', error)
+            toast.success("Add Product Succesfully");
+            navigate("/product/create?page=product");
+            queryClient.invalidateQueries(['productsPage'])
+        },
+        onError : ()=>{
+            toast.error("error")
         }
+      })
+
+
+      const createProduct = async (e)=>{
+        e.preventDefault();
+        await createProductMutation({name,image,price,cost,discount,category,stock})
     }
+
 
     const createCategory = async (e)=>{
         const id = uuidv4();
@@ -76,20 +75,10 @@ export default function ProductCreatePage() {
     }
 
     //fetch Categories
-    useEffect(() => {
-        const fetchCategories = async () => {
-            const q = query(collection(db, "categories"),orderBy("createdAt","desc"));
-            const querySnapshot = await getDocs(q);
-            const categoriesData = querySnapshot.docs.map(doc => ({
-                ...doc.data()
-              }));
-              setCategories(categoriesData);
-        };
-    
-        fetchCategories();
-      }, [categories]);
+    const { isLoading : categoriesFetchingStatus, isError : categoriesFetchingError, data : categories } = useQuery(
+        { queryKey: ['categories'], queryFn : ()=>fetchCategories()}
+      )
 
-      console.log(category);
     
 
 
