@@ -51,7 +51,6 @@ const { mutateAsync : updateUserMutation , isPending  } = useMutation({
     }
   })
 
-  console.log(isPending);
 
   return (
     <div>

@@ -39,7 +39,7 @@ export default function ProductCreatePage() {
         }
     
 
-    const { mutateAsync : createProductMutation  } = useMutation({
+    const { mutateAsync : createProductMutation , isPending : createProductLoading  } = useMutation({
         mutationFn : createNewProduct,
         onSuccess : ()=>{
             setName("");
@@ -66,7 +66,7 @@ export default function ProductCreatePage() {
         await createCategoryMutation({id,categoryName});   
     }
     
-    const { mutateAsync : createCategoryMutation  } = useMutation({
+    const { mutateAsync : createCategoryMutation ,isPending : createCategoryLoading } = useMutation({
         mutationFn : createCategory,
         onSuccess : ()=>{
             setCategoryName("");
@@ -101,7 +101,6 @@ export default function ProductCreatePage() {
       })
     
 
-
   return (
     <div>
         <Navbar />
@@ -129,11 +128,11 @@ export default function ProductCreatePage() {
                                 <div className='flex flex-wrap gap-3 justify-between mt-3'>
                                     <div>
                                             <label htmlFor="cost" className="block mb-2 text-sm font-medium text-gray-900 ">Cost</label>
-                                            <input required value={cost} onChange={(e)=>setCost(e.target.value)} type="text" id="cost" name="cost" autoComplete='off'  className="block w-24 p-2 text-gray-900 border-2 bg-white rounded-lg placeholder:text-xs  " />
+                                            <input required value={cost} onChange={(e)=>setCost(e.target.value)} type="number" id="cost" name="cost" autoComplete='off'  className="block w-24 p-2 text-gray-900 border-2 bg-white rounded-lg placeholder:text-xs  " />
                                     </div>
                                     <div>
                                             <label htmlFor="price" className="block mb-2 text-sm font-medium text-gray-900 ">Price</label>
-                                            <input required value={price} onChange={(e)=>setPrice(e.target.value)} type="text" id="price" name="price" autoComplete='off'  className="block w-24 p-2 text-gray-900 border-2 bg-white rounded-lg placeholder:text-xs  " />
+                                            <input required value={price} onChange={(e)=>setPrice(e.target.value)} type="number" id="price" name="price" autoComplete='off'  className="block w-24 p-2 text-gray-900 border-2 bg-white rounded-lg placeholder:text-xs  " />
                                     </div>
                                     <div>
                                             <label htmlFor="discount" className="block mb-2 text-sm font-medium text-gray-900 ">Discount</label>
@@ -142,7 +141,7 @@ export default function ProductCreatePage() {
                                 </div>
                                 <div className='mt-3'>
                                         <label htmlFor="stock" className="block mb-2 text-sm font-medium text-gray-900 ">Stock</label>
-                                        <input required value={stock} onChange={(e)=>setStock(e.target.value)} type="text" id="stock" name="stock" autoComplete='off' className="block w-full p-2 text-gray-900 border-2 bg-white rounded-lg   " />
+                                        <input required value={stock} onChange={(e)=>setStock(e.target.value)} type="number" id="stock" name="stock" autoComplete='off' className="block w-full p-2 text-gray-900 border-2 bg-white rounded-lg   " />
                                 </div>
                                 <div>
                                         <label htmlFor="category" className="block mb-2 text-sm font-medium text-gray-900 ">Category</label>
@@ -156,7 +155,8 @@ export default function ProductCreatePage() {
                                         </select>
                                 </div>
                                 <div className='mt-6'>
-                                    <input type='submit'   className='w-full font-bold text-white bg-yellow-700 rounded-lg py-2' />
+                                    <input type='submit' value={createProductLoading ? "Loading..." : "Submit"} disabled={createProductLoading == true}   className='w-full font-bold text-white bg-yellow-700 rounded-lg py-2 c' />
+                                    
                                 </div>
 
                             </form>
@@ -168,7 +168,7 @@ export default function ProductCreatePage() {
                                 <input value={categoryName} onChange={(e)=>setCategoryName(e.target.value)} type="text" id="categoryName" name="categoryName" autoComplete='off' className="block w-full p-2 text-gray-900 border-2 bg-white rounded-lg   " />
                             </div>
                             <div className='mt-3'>
-                                <button onClick={createCategoryBtn} disabled={categoryName==""}  className='w-full font-bold text-white bg-yellow-700 rounded-lg py-2'>Submit</button>
+                                <button onClick={createCategoryBtn} disabled={categoryName=="" || createCategoryLoading == true}  className='w-full font-bold text-white bg-yellow-700 rounded-lg py-2'>{createCategoryLoading ? "Loading..." : "Submit"}</button>
                             </div>
                             <div className='p-6 mt-3 border rounded-lg shadow-lg '>
                                 <header className='font-bold text-sm flex justify-between'>

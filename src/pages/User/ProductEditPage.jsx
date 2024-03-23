@@ -51,7 +51,7 @@ export default function ProductEditPage() {
   };
 
   
-  const { mutateAsync : updateProductMutation  } = useMutation({
+  const { mutateAsync : updateProductMutation , isPending } = useMutation({
     mutationFn : updateProductById,
     onSuccess : ()=>{
         toast.success("Product Updated Successfully");
@@ -92,20 +92,20 @@ export default function ProductEditPage() {
                                 <div className='flex flex-wrap gap-3 justify-between mt-3'>
                                         <div>
                                             <label htmlFor="cost" className="block mb-2 text-sm font-medium text-gray-900 ">Cost</label>
-                                            <input value={cost} onChange={(e)=>setCost(e.target.value)} type="text" id="cost" name="cost" autoComplete='off'  className="block w-24 p-2 text-gray-900 border-2 bg-white rounded-lg placeholder:text-xs  " />
+                                            <input value={cost} onChange={(e)=>setCost(e.target.value)} type="number" id="cost" name="cost" autoComplete='off'  className="block w-24 p-2 text-gray-900 border-2 bg-white rounded-lg placeholder:text-xs  " />
                                     </div>
                                     <div>
                                             <label htmlFor="price" className="block mb-2 text-sm font-medium text-gray-900 ">Price</label>
-                                            <input value={price} onChange={(e)=>setPrice(e.target.value)} type="text" id="price" name="price" autoComplete='off'  className="block w-24 p-2 text-gray-900 border-2 bg-white rounded-lg placeholder:text-xs  " />
+                                            <input value={price} onChange={(e)=>setPrice(e.target.value)} type="number" id="price" name="price" autoComplete='off'  className="block w-24 p-2 text-gray-900 border-2 bg-white rounded-lg placeholder:text-xs  " />
                                     </div>
                                     <div>
                                             <label htmlFor="discount" className="block mb-2 text-sm font-medium text-gray-900 ">Discount</label>
-                                            <input value={discount} onChange={(e)=>setDiscount(e.target.value)} type="text" id="discount" name="discount" autoComplete='off'  className="block w-24 p-2 text-gray-900 border-2 bg-white rounded-lg placeholder:text-xs  " />
+                                            <input value={discount} onChange={(e)=>setDiscount(e.target.value)} type="number" id="discount" name="discount" autoComplete='off'  className="block w-24 p-2 text-gray-900 border-2 bg-white rounded-lg placeholder:text-xs  " />
                                     </div>
                                 </div>
                                 <div className='mt-3'>
                                         <label htmlFor="stock" className="block mb-2 text-sm font-medium text-gray-900 ">Stock</label>
-                                        <input value={stock} onChange={(e)=>setStock(e.target.value)} type="text" id="stock" name="stock" autoComplete='off' className="block w-full p-2 text-gray-900 border-2 bg-white rounded-lg   " />
+                                        <input value={stock} onChange={(e)=>setStock(e.target.value)} type="number" id="stock" name="stock" autoComplete='off' className="block w-full p-2 text-gray-900 border-2 bg-white rounded-lg   " />
                                 </div>
                                 <div>
                                         <label htmlFor="category" className="block mb-2 text-sm font-medium text-gray-900 ">Category</label>
@@ -118,7 +118,7 @@ export default function ProductEditPage() {
                                         </select>
                                 </div>
                                 <div className='mt-3'>
-                                    <button  onClick={handleUpdateProduct}  className='w-full font-bold text-white bg-yellow-700 rounded-lg py-2'>Submit</button>
+                                    <button  onClick={handleUpdateProduct} disabled={isPending==true}  className='w-full font-bold text-white bg-yellow-700 rounded-lg py-2'>{isPending ? "Loading..." : "Submit"}</button>
                                 </div>
                             </form>
                         </section>

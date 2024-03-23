@@ -67,7 +67,7 @@ export default function Cart() {
   }
 
   
-  const { mutateAsync : addToCartMutation , isLoading : updateToCartLoading  } = useMutation({
+  const { mutateAsync : addToCartMutation , isPending : updateToCartLoading  } = useMutation({
     mutationFn : updateToCart,
     onSuccess : ()=>{
         toast.success("Add Order Succesfully");
@@ -180,7 +180,7 @@ export default function Cart() {
         </section>
         <section className='flex flex-col gap-3'>
             {/* <button disabled={cart.length == 0} onClick={createReciept}  className='w-full font-bold border-2 border-yellow-700 text-yellow-700 rounded-lg py-2 '>Reciept</button> */}
-            <button disabled={cart?.length == 0} onClick={handleSubmit}  className='w-full font-bold text-white bg-yellow-700 rounded-lg py-2'>Submit</button>
+            <button disabled={cart?.length == 0 || updateToCartLoading==true} onClick={handleSubmit}  className='w-full font-bold text-white bg-yellow-700 rounded-lg py-2'>{updateToCartLoading ? "Loading..." : "Submit"}</button>
         </section>
     </div>
   )

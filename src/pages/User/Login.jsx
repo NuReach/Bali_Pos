@@ -94,7 +94,7 @@ export default function Login() {
                         </svg>
                         <input className="pl-2 outline-none border-none focus:ring-0" type="text" name="" id="" placeholder="Password" value={password} onChange={(e)=>setPassword(e.target.value)} />
                     </div>
-                    <button onClick={login} type="submit" className="block w-full bg-indigo-600 mt-4 py-2 rounded-2xl text-white font-semibold mb-2">Login</button>
+                    <button onClick={login} type="submit" className="block w-full bg-indigo-600 mt-4 py-2 rounded-2xl text-white font-semibold mb-2">{loginMutation.isPending ? "Loading..." : "Login"}</button>
                     <button  className="text-sm ml-2 hover:text-blue-500 cursor-pointer">Contact to admin to create new account !</button>
                 </div>
             </form>
