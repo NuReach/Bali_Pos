@@ -88,9 +88,44 @@ export const updateToCart = async (state) => {
   }
  };
 
+// history
+
+export const fetchHistoryWithPagination = async (btn, sortField, sortDir,snapShot,pageSize) => {
+  let q;
+  if ( btn == "next" && snapShot  ) {
+    const lastVisible = snapShot.docs[snapShot.docs.length-1]
+    q = query(
+      collection(db, "cart"),
+      orderBy(sortField, sortDir),
+      startAfter(lastVisible),
+      limit(pageSize)
+    );
+  }else if(btn == "back" && snapShot){
+    const lastVisible = snapShot.docs[0];
+    console.log(snapShot.docs.length,pageSize);
+    q = query(
+      collection(db, "cart"),
+      orderBy(sortField, sortDir),
+      endBefore(lastVisible),
+      limit(pageSize)
+    );
+  }else {
+    q = query(
+      collection(db, "cart"),
+      orderBy(sortField, sortDir),
+      limit(pageSize)
+    );
+  }
+
+  const querySnapshot = await getDocs(q);
+  const data = querySnapshot.docs.map(doc => ({
+    ...doc.data(),querySnapshot:querySnapshot
+  }));
+  return data;
+}
+
 //product page
 export const fetchProductWithPagination = async (btn, sortField, sortDir,snapShot,pageSize) => {
-
   let q;
   if ( btn == "next" && snapShot  ) {
     const lastVisible = snapShot.docs[snapShot.docs.length-1]

@@ -7,11 +7,29 @@ import { collection, deleteDoc, doc, getDocs } from 'firebase/firestore';
 import { db } from '../../firebase';
 import LoadingSkeleton from '../Components/LoadingSkeleton';
 import { toast } from 'sonner';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { countOrder, fetchHistoryWithPagination } from '../../api';
 
 export default function HistoryPage() {
   const [data,setData] = useState();
   const [filter,setFilter] = useState(false);
+
+  
+  const [sortField,setSortField] = useState("createdAt");
+  const [sortDir,setSortDir] = useState("desc")
+  const [page,setPage] = useState(1);
+  const [btn,setBtn] = useState(null);
+  const [shot,setSnapShot] = useState(null);
+  const [pageSize,setPageSize] = useState(7);
+  
+  const queryClient = useQueryClient();
+
   const navigate = useNavigate();
+
+  const { isLoading: ordersFetchingStatus, isError: ordersFetchingError, data: orderCount } =  useQuery(
+    { queryKey: ['orderCount'], queryFn: ()=>countOrder()}
+  );
+
   const handleClick = (e)=>{
     e.preventDefault();
     setFilter(!filter)
@@ -28,18 +46,17 @@ export default function HistoryPage() {
     }
   }
 
-
-  useEffect(() => {
-    const fetchOrders = async () => {
-      const querySnapshot = await getDocs(collection(db, "cart"));
-      const data = querySnapshot.docs.map(doc => ({
-        ...doc.data()
-      }));
-      setData(data);
-    }
-    fetchOrders();
-  }, [deleteOrder]);
+  const { isLoading :historyFetchingStatus, isError :historyFetchingError, data :historyPage } = useQuery(
+    { queryKey: ['historyPage',{page}] , 
+      queryFn: ()=>fetchHistoryWithPagination(btn,sortField,sortDir,shot,pageSize), 
+      cacheTime : 0,
+      staleTime : Infinity,
+     }
+  );
   
+  console.log(historyPage);
+  console.log(orderCount);
+
   return (
     <div>
       <Navbar />
@@ -62,7 +79,7 @@ export default function HistoryPage() {
                   <p className='font-medium text-xs'>Filter</p>
               </div>
           </div>
-          <div className='p-6 mt-3 border rounded-lg shadow-lg '>
+          <div className='p-6 mt-3 border rounded-lg shadow-lg min-h-screen'>
               <header className='font-bold text-sm flex justify-between'>
                   <p className='w-12'>ID</p>
                   <p className='lg:w-48'>Subtotal</p>
@@ -72,9 +89,9 @@ export default function HistoryPage() {
                   <p className='w-16 hidden lg:block'>Payment</p>
                   <p className='w-48 flex justify-end'>State</p>
               </header>
-            <div className='min-h-screen'>
+            <div className=''>
               {
-                  data ? data.map((item,i)=>(
+                  historyPage ? historyPage.map((item,i)=>(
                       <div key={i} className='font-bold text-sm flex justify-between items-center my-6 border-b-2 pb-3'>
                           <p className='w-12'>{i+1}</p>
                           <div className='lg:w-48'>
@@ -96,8 +113,27 @@ export default function HistoryPage() {
                   </div>
               }
               </div>
-              <div className='w-full flex justify-end'>
-                  <button className='font-medium text-xs py-1 rounded-md px-4 text-white bg-black  my-1 hidden xl:block'>Next</button>
+              <div className='flex gap-6 w-full justify-end items-center'>
+                  {
+                    historyPage &&
+                    <p className='text-xs font-medium text-gray-600 line-clamp-1  hidden lg:block'>Orders Total : { pageSize*page > orderCount ? orderCount + "/" +  orderCount : pageSize * page + "/" + orderCount}</p>
+                  }
+                  { page>1 &&  historyPage && <div className='flex justify-end'>
+                      <button onClick={ async()=>{
+                        setPage(prevPage => prevPage-1);
+                        setBtn("back");
+                        setSnapShot(historyPage[0].querySnapshot);
+                        await fetchProductWithPagination("back",sortField,sortDir,historyPage[0].querySnapshot,pageSize);
+                        }}  className='font-medium text-xs py-1 rounded-md px-4 text-white bg-black  my-1 hidden xl:block'>Back</button>
+                  </div>}
+                  { pageSize * page < orderCount &&  historyPage && <div className=' flex justify-end'>
+                      <button onClick={ async ()=>{
+                        setPage(prevPage => prevPage+1)
+                        setBtn("next");
+                        setSnapShot(historyPage[0].querySnapshot);
+                        await fetchProductWithPagination("next",sortField,sortDir,historyPage[0].querySnapshot,pageSize)
+                        }}  className='font-medium text-xs py-1 rounded-md px-4 text-white bg-black  my-1 hidden xl:block'>Next</button>
+                  </div>}
               </div>
           </div>
         </div>
