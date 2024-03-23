@@ -2,9 +2,7 @@ import React, { useEffect, useState } from 'react'
 import Navbar from '../Components/Navbar'
 import Sidebar from '../Components/Sidebar'
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Timestamp, collection, deleteDoc, doc, getDoc, getDocs, onSnapshot, orderBy, query, setDoc } from "firebase/firestore"; 
 import { toast } from 'sonner';
-import { db } from '../../firebase';
 import { v4 as uuidv4 } from 'uuid';
 import LoadingSkeleton from '../Components/LoadingSkeleton';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';

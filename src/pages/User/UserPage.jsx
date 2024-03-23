@@ -3,10 +3,37 @@ import Navbar from '../Components/Navbar'
 import Sidebar from '../Components/Sidebar'
 import { useNavigate } from 'react-router-dom'
 import products from '../products';
+import { deleteUser, fetchUser } from '../../api';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import LoadingSkeleton from '../Components/LoadingSkeleton';
+import { toast } from 'sonner';
 
 export default function UserPage() {
   const navigate = useNavigate();
-  const [data,setData] = useState(products);
+  const queryClient = useQueryClient();
+
+  const { isLoading: usersCountStatus, isError: usersCountError, data: users } =  useQuery(
+    { queryKey: ['users'] , queryFn : ()=>fetchUser()}
+  );
+
+  const deleteBtn = async (e,id)=>{
+    e.preventDefault();
+    if (window.confirm("Do you really want to delete?")) {
+      await deleteUserMutation({id});
+    }
+  }
+
+  const { mutateAsync : deleteUserMutation  } = useMutation({
+    mutationFn : deleteUser,
+    onSuccess : ()=>{
+        toast.success("User deleted Successfully");
+        queryClient.invalidateQueries(['users']);
+    },
+    onError : ()=>{
+        toast.error("error")
+    }
+  })
+
   return (
     <div>
         <Navbar />
@@ -25,30 +52,30 @@ export default function UserPage() {
                 <header className='font-bold text-sm flex justify-between'>
                     <p className='w-12'>ID</p>
                     <p className='lg:w-48'>Name</p>
-                    <p className='lg:w-48 hidden lg:block'>Password</p>
+                    <p className='lg:w-48 hidden lg:block'>Role</p>
                     <p className='w-48 flex justify-end'>State</p>
                 </header>
+                <div className='min-h-screen'>
                 {
-                    data.map((item,i)=>(
-                        <div className='font-bold text-sm flex justify-between items-center my-6 border-b-2 pb-3'>
+                  users ? 
+                    users?.map((item,i)=>(
+                        <div key={i} className='font-bold text-sm flex justify-between items-center my-6 border-b-2 pb-3'>
                             <p className='w-12'>{i+1}</p>
                             <div className='lg:w-48'>
-                            <p className='font-medium text-gray-600 line-clamp-1 truncate'>{item.name}</p>                      
+                            <p className='font-medium text-gray-600 line-clamp-1 truncate'>{item.username}</p>                      
                             </div>
-                            <p className='lg:w-48 font-medium text-gray-600 line-clamp-1  hidden lg:block'>{item.cost}</p>
+                            <p className='lg:w-48 font-medium text-gray-600 line-clamp-1  hidden lg:block'>{item.role}</p>
                             <p className='w-48 flex gap-3 flex-wrap justify-end '>  
                               <button onClick={()=>navigate(`/user/edit/${item.id}`)} className='font-medium text-xs py-1 rounded-full px-4 text-white bg-yellow-700 w-fit  my-1'>Edit</button>
-                              <button onClick={()=>{
-                                  if (window.confirm("Do you really want to delete?")) {
-                                      console.log(item.id);
-                                    }
-                              }} className='font-medium text-xs py-1 rounded-full px-4 text-white bg-red-500 w-fit  my-1'>Delete</button> 
+                              <button onClick={(e)=>deleteBtn(e,item.id)} className='font-medium text-xs py-1 rounded-full px-4 text-white bg-red-500 w-fit  my-1'>Delete</button> 
                             </p>
                         </div>
                     ))
+                    :
+                    <div className='min-h-screen flex justify-center items-center'>
+                      <LoadingSkeleton />
+                    </div>
                 }
-                <div className='w-full flex justify-end'>
-                    <button className='font-medium text-xs py-1 rounded-md px-4 text-white bg-black  my-1 hidden xl:block'>Next</button>
                 </div>
             </div>
           </div>

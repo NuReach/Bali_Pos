@@ -280,3 +280,50 @@ export const totalIncome = async ()=>{
     });
     return snapshot.data().totalPrice;
   }
+
+// user 
+
+export const fetchUser = async () =>{
+  const q = query(
+    collection(db, "users"),
+    orderBy("username", "asc")
+  );
+  const querySnapshot = await getDocs(q);
+  const data = querySnapshot.docs.map(doc => ({
+    ...doc.data()
+  }));
+  return data;
+}
+
+export const deleteUser = async (state) => {
+  const {id} = state;
+  await deleteDoc(doc(db, "users", id));
+} 
+
+export const createUser = async (state) => {
+  const { username,password,id,role } = state;
+  await setDoc(doc(db, "users", id), {
+    id: id,
+    username: username,
+    role : role,
+    password : password,
+    createdAt: Date.now(),
+  });
+}
+
+export const fetchUserById = async (id)=>{
+  const userRef = doc(db, "users", id); 
+  const userSnap = await getDoc(userRef);
+  return userSnap.data();
+}
+
+export const updateUser = async (state)=>{
+  const { username,password,id,role } = state;
+  await updateDoc(doc(db, "users", id), {
+    id: id,
+    username: username,
+    role : role,
+    password : password,
+    createdAt: Date.now(),
+  });
+}
