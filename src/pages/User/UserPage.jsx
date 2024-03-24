@@ -46,7 +46,6 @@ export default function UserPage() {
               navigate("/user/create")
               }} className='rounded-full mr-3 my-1 border-2 py-1 px-8  font-medium text-xs cursor-pointer hover:scale-105 transition bg-yellow-700 text-white'>ADD</button>
               <button onClick={(e)=>clickFilter(e,"latest")} className='rounded-full mr-3 my-1 border-2 py-1 px-8 bg-white font-medium text-xs cursor-pointer hover:scale-105 transition'>Latest</button>
-              <button onClick={(e)=>clickFilter(e,"name")} className='rounded-full mr-3 my-1 border-2 py-1 px-8 bg-white font-medium text-xs cursor-pointer hover:scale-105 transition'>Name</button>
             </div>
             <div className='p-6 mt-3 border rounded-lg shadow-lg '>
                 <header className='font-bold text-sm flex justify-between'>

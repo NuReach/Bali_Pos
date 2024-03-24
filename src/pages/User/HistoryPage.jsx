@@ -66,14 +66,14 @@ export default function HistoryPage() {
           <p className='flex font-bold text-3xl'>History</p>
           <div className='flex items-center flex-wrap relative'>
             <button onClick={(e)=>clickFilter(e,"latest")} className='rounded-full mr-3 my-1 border-2 py-1 px-8 bg-white font-medium text-xs cursor-pointer hover:scale-105 transition'>Latest</button>
-            <div className= {filter ? 'flex flex-wrap items-center' : 'hidden' }>
+            {/* <div className= {filter ? 'flex flex-wrap items-center' : 'hidden' }>
                 <button onClick={(e)=>clickFilter(e,"name")} className='rounded-full mr-3 my-1 border-2 py-1 px-8 bg-white font-medium text-xs cursor-pointer hover:scale-105 transition'>Name</button>
                 <button onClick={(e)=>clickFilter(e,"cost")} className='rounded-full mr-3 my-1 border-2 py-1 px-8 bg-white font-medium text-xs cursor-pointer hover:scale-105 transition'>Cost</button>
                 <button onClick={(e)=>clickFilter(e,"price")} className='rounded-full mr-3 my-1 border-2 py-1 px-8 bg-white font-medium text-xs cursor-pointer hover:scale-105 transition'>Price</button>
                 <button onClick={(e)=>clickFilter(e,"cateogry")} className='rounded-full mr-3 my-1 border-2 py-1 px-8 bg-white font-medium text-xs cursor-pointer hover:scale-105 transition'>Category</button>
                 <button onClick={(e)=>clickFilter(e,"stock")} className='rounded-full mr-3 my-1 border-2 py-1 px-8 bg-white font-medium text-xs cursor-pointer hover:scale-105 transition'>Stock</button>
                 <button onClick={(e)=>clickFilter(e,"descount")} className='rounded-full mr-3 my-1 border-2 py-1 px-8 bg-white font-medium text-xs cursor-pointer hover:scale-105 transition'>Discount</button>
-            </div>
+            </div> */}
               <div onClick={handleClick} className='flex mr-3 my-1 items-center space-x-1 cursor-pointer hover:scale-105 transition'>
                   <svg className='font-medium' xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round"><path d="M10 8h10M4 16h10"/><circle cx="7" cy="8" r="3" transform="rotate(90 7 8)"/><circle cx="17" cy="16" r="3" transform="rotate(90 17 16)"/></g></svg>
                   <p className='font-medium text-xs'>Filter</p>
