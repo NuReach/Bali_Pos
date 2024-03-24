@@ -166,10 +166,10 @@ export default function Cart() {
         <section className=' flex flex-col gap-3'>
             <p className='text-lg font-bold'>Receive </p>
             <div className='flex gap-6'>
-                <button onClick={(e)=>setCurrency("riel")}  className={currency == "riel" ?'rounded-lg bg-gray-200 border-2 border-yellow-700 w-24 h-14 flex flex-col justify-center items-center text-yellow-700' :'rounded-lg border-2 border-yellow-700 w-24 h-14 flex flex-col justify-center items-center text-yellow-700'}>
+                <button onClick={(e)=>{setCurrency("riel");setRecieve(0)}}  className={currency == "riel" ?'rounded-lg bg-gray-200 border-2 border-yellow-700 w-24 h-14 flex flex-col justify-center items-center text-yellow-700' :'rounded-lg border-2 border-yellow-700 w-24 h-14 flex flex-col justify-center items-center text-yellow-700'}>
                     <p className='text-xs font-medium'>Riel</p>
                 </button>
-                <button onClick={(e)=>setCurrency("usd")} className={currency == "usd" ?'rounded-lg bg-gray-200 border-2 border-yellow-700 w-24 h-14 flex flex-col justify-center items-center text-yellow-700' :'rounded-lg border-2 border-yellow-700 w-24 h-14 flex flex-col justify-center items-center text-yellow-700'}>
+                <button onClick={(e)=>{setCurrency("usd");setRecieve(0)}} className={currency == "usd" ?'rounded-lg bg-gray-200 border-2 border-yellow-700 w-24 h-14 flex flex-col justify-center items-center text-yellow-700' :'rounded-lg border-2 border-yellow-700 w-24 h-14 flex flex-col justify-center items-center text-yellow-700'}>
                     <p className='text-xs font-medium'>USD</p>
                 </button>
             </div>
@@ -202,7 +202,14 @@ export default function Cart() {
                 </div>
             </div>
             {
-                receive != 0 && receive > subTotal &&
+                receive != 0 && currency == "riel" && receive/rate >= total && 
+                <div className='flex justify-between'>
+                    <p className='text-xs font-medium text-gray-500'>Recieve</p>
+                    <p className='text-lg font-medium text-gray-500'>{currency == "riel" ? "KHR " : "USD $"}{formatNumberWithCommas(receive) }</p>
+                </div>
+            }
+            {
+                receive != 0 && currency == "usd" && receive >= total && 
                 <div className='flex justify-between'>
                     <p className='text-xs font-medium text-gray-500'>Recieve</p>
                     <p className='text-lg font-medium text-gray-500'>{currency == "riel" ? "KHR " : "USD $"}{formatNumberWithCommas(receive) }</p>

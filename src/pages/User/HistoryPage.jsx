@@ -91,7 +91,7 @@ export default function HistoryPage() {
               </header>
             <div className=''>
               {
-                  historyPage ? historyPage.map((item,i)=>(
+                  historyPage ?  historyPage.map((item,i)=>(
                       <div key={i} className='font-bold text-sm flex justify-between items-center my-6 border-b-2 pb-3'>
                           <p className='w-12'>{i+1}</p>
                           <div className='lg:w-48'>
@@ -111,6 +111,12 @@ export default function HistoryPage() {
                   <div className='min-h-screen flex justify-center items-center'>
                     <LoadingSkeleton />
                   </div>
+              }
+              {
+                historyPage && historyPage == 0  &&        
+                    <div className='w-full h-screen flex justify-center items-center text-xs'>
+                      <p>No Items</p>
+                    </div>
               }
               </div>
               <div className='flex gap-6 w-full justify-end items-center'>
