@@ -8,11 +8,7 @@ import { useNavigate } from 'react-router-dom';
 export const fetchProducts = async (key) => {
     let q;
     if (key.length === 0) {
-       q = query(
-        collection(db, "products"),
-        orderBy("name", "asc"),
-        limit(18)
-      );
+       return 0;
     } else {
        q = query(
         collection(db, "products"),
@@ -72,6 +68,14 @@ export const updateToCart = async (state) => {
     });
     
     await Promise.all(updateStockPromises);
+
+    const createCartItems = cart.map(async(cartItem) => {
+      const cartItemId = cartItem.id;
+      await setDoc(doc(db,"cartItems",cartItemId),{cartItem})
+    })
+
+    await Promise.all(createCartItems);
+
 
     const dataToStore = {
       id: id,
@@ -284,6 +288,21 @@ export const totalIncome = async ()=>{
     });
     return snapshot.data().totalPrice;
   }
+
+export const getLeastStockProduct = async ()=>{
+  const q = query(
+    collection(db, "products"),
+    orderBy("stock", "asc"),
+    limit(10)
+  );
+  
+  const querySnapshot = await getDocs(q);
+  const data = querySnapshot.docs.map(doc => ({
+    ...doc.data()
+  }));
+  
+  return data;
+}  
 
 // user 
 

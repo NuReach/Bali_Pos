@@ -92,7 +92,7 @@ export default function Cart() {
 
   const handleSubmit = async (e)=>{
     e.preventDefault();
-    if (payment == "") {
+    if (payment == "" || currency =="") {
         alert("Please Select Payemt")
     }else{
         try {
@@ -103,10 +103,9 @@ export default function Cart() {
     }
   }
 
-  console.log(change);
 
   return (
-    <div className={showCartBoolean ? 'w-96 border-l shadow-lg p-3 gap-3 absolute right-0 bg-white lg:relative  lg:flex flex-col transition-opacity ' : 'min-w-96 w-96 border-l shadow-lg p-3 gap-3 absolute right-0  bg-white lg:relative hidden  lg:flex flex-col '} >
+    <div className={showCartBoolean ? 'w-96 border-l shadow-lg p-3 gap-3 absolute right-0 bg-white lg:relative  lg:flex flex-col transition-opacity ' : 'min-w-80 w-96 border-l shadow-lg p-3 gap-3 absolute right-0  bg-white lg:relative hidden  lg:flex flex-col '} >
         <section className='border-b pb-3 flex justify-between'>
             <div className='flex gap-3'>
                 <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M5.85 17.1q1.275-.975 2.85-1.537T12 15q1.725 0 3.3.563t2.85 1.537q.875-1.025 1.363-2.325T20 12q0-3.325-2.337-5.663T12 4Q8.675 4 6.337 6.338T4 12q0 1.475.488 2.775T5.85 17.1M12 13q-1.475 0-2.488-1.012T8.5 9.5q0-1.475 1.013-2.488T12 6q1.475 0 2.488 1.013T15.5 9.5q0 1.475-1.012 2.488T12 13m0 9q-2.075 0-3.9-.788t-3.175-2.137q-1.35-1.35-2.137-3.175T2 12q0-2.075.788-3.9t2.137-3.175q1.35-1.35 3.175-2.137T12 2q2.075 0 3.9.788t3.175 2.137q1.35 1.35 2.138 3.175T22 12q0 2.075-.788 3.9t-2.137 3.175q-1.35 1.35-3.175 2.138T12 22"/></svg>
@@ -126,7 +125,7 @@ export default function Cart() {
                 {
                     cart.length >0 ? cart.map((item,i)=>(
                         <div key={i} className='flex gap-2  items-center'>
-                            <img src="/logo.jpg" className='w-12 h-12 rounded-lg'  alt="" />
+                          
                             <p className='w-24 truncate text-xs font-medium'>{item.item.name}</p>
                             {
                                 item.qty>1 ? 
@@ -192,27 +191,27 @@ export default function Cart() {
         <section className='mt-3 flex flex-col gap-3'>
             <div className='flex justify-between'>
                 <p className='text-xs font-medium text-gray-500'>Subtotal</p>
-                <p className='text-lg font-medium text-gray-500'>USD ${subTotal}</p>
+                <p className='text-sm font-medium text-gray-500'>USD ${subTotal}</p>
             </div>
             <div className='flex justify-between'>
                 <p className='text-xs font-medium text-gray-500'>Discount</p>
                 <div className='flex items-center'>
-                <input type="text" onChange={handleInput} value={discount} className='focus:ring-0 focus:border-none focus:outline-none w-6 text-lg text-end pr-1 font-medium text-gray-500' />
-                <span className='text-lg font-medium text-gray-500'>%</span>
+                <input type="text" onChange={handleInput} value={discount} className='focus:ring-0 focus:border-none focus:outline-none w-6 text-sm text-end pr-1 font-medium text-gray-500' />
+                <span className='text-sm font-medium text-gray-500'>%</span>
                 </div>
             </div>
             {
                 receive != 0 && currency == "riel" && receive/rate >= total && 
                 <div className='flex justify-between'>
                     <p className='text-xs font-medium text-gray-500'>Recieve</p>
-                    <p className='text-lg font-medium text-gray-500'>{currency == "riel" ? "KHR " : "USD $"}{formatNumberWithCommas(receive) }</p>
+                    <p className='text-sm font-medium text-gray-500'>{currency == "riel" ? "KHR " : "USD $"}{formatNumberWithCommas(receive) }</p>
                 </div>
             }
             {
                 receive != 0 && currency == "usd" && receive >= total && 
                 <div className='flex justify-between'>
                     <p className='text-xs font-medium text-gray-500'>Recieve</p>
-                    <p className='text-lg font-medium text-gray-500'>{currency == "riel" ? "KHR " : "USD $"}{formatNumberWithCommas(receive) }</p>
+                    <p className='text-sm font-medium text-gray-500'>{currency == "riel" ? "KHR " : "USD $"}{formatNumberWithCommas(receive) }</p>
                 </div>
             }
             {
@@ -220,8 +219,8 @@ export default function Cart() {
                 <div className='flex justify-between'>
                     <p className='text-xs font-medium text-gray-500'>Change</p>
                     <div className='flex flex-col justify-end'>
-                    <p className='text-lg font-medium text-gray-500 flex justify-end'>{currency == "riel" ? "KHR " + formatNumberWithCommas(change*rate) : "USD $" + change}</p>
-                    <p className='text-lg font-medium text-gray-500 flex justify-end'>{currency == "riel" ? "USD $" + change : "KHR " + formatNumberWithCommas(change*rate) }</p>
+                    <p className='text-sm font-medium text-gray-500 flex justify-end'>{currency == "riel" ? "KHR " + formatNumberWithCommas(change*rate) : "USD $" + change}</p>
+                    <p className='text-sm font-medium text-gray-500 flex justify-end'>{currency == "riel" ? "USD $" + change : "KHR " + formatNumberWithCommas(change*rate) }</p>
                     </div>
                 </div>
             }
@@ -230,18 +229,18 @@ export default function Cart() {
                 discount > 0 && 
                 <div className='flex justify-between'>
                 <p className='text-xs font-medium text-gray-400'>Discount Price</p>
-                <p className='text-lg font-medium text-gray-400'>-USD ${discountPrice} </p>
+                <p className='text-sm font-medium text-gray-400'>-USD ${discountPrice} </p>
             </div>
             }
             <div className='flex justify-between'>
-                <p className='text-lg font-medium text-black'>TOTAL</p>
+                <p className='text-sm font-medium text-black'>TOTAL</p>
                 <div className='flex flex-col justify-end'>
-                    <p className='text-lg font-medium text-gray-500 flex justify-end'>USD ${total}</p>
-                    <p className='text-lg font-medium text-gray-500 flex justify-end'>{"KHR "+formatNumberWithCommas(total*rate) }</p>
+                    <p className='text-sm font-medium text-gray-500 flex justify-end'>USD ${total}</p>
+                    <p className='text-sm font-medium text-gray-500 flex justify-end'>{"KHR "+formatNumberWithCommas(total*rate) }</p>
                     </div>
             </div>
         </section>
-        <section className='flex flex-col gap-3'>
+        <section className='flex flex-col gap-3 mt-3'>
             {/* <button disabled={cart.length == 0} onClick={createReciept}  className='w-full font-bold border-2 border-yellow-700 text-yellow-700 rounded-lg py-2 '>Reciept</button> */}
             <button disabled={cart?.length == 0 || updateToCartLoading==true} onClick={handleSubmit}  className='w-full font-bold text-white bg-yellow-700 rounded-lg py-2'>{updateToCartLoading ? "Loading..." : "Submit"}</button>
         </section>

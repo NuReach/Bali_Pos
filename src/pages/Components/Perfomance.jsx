@@ -57,7 +57,7 @@ const revenue = [3, 10, 20, 30, 40, 69, 33, 40, 20, 50, 80, 69, 30, 80, 60, 50, 
     },
   };
   return (
-    <div className='w-full p-6 shadow-lg rounded-lg border h-full'>
+    <div className='w-full p-6 shadow-lg rounded-lg border h-96'>
       <p className='font-bold text-lg w-fit'>Sale In This Month </p>
       <div className='h-full'>
         <Line options={options} data={data} />

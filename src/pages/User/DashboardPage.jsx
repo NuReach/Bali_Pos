@@ -6,13 +6,16 @@ import products from '../products';
 import { db } from '../../firebase';
 import { toast } from 'sonner';
 import { useQuery } from '@tanstack/react-query';
-import { countCategory, countOrder, countProduct, countTodayIncome, countTodayOrder, totalIncome } from '../../api';
+import { countCategory, countOrder, countProduct, countTodayIncome, countTodayOrder, getLeastStockProduct, totalIncome } from '../../api';
+import LoadingSkeleton from '../Components/LoadingSkeleton';
+import { useNavigate } from 'react-router-dom';
 
 
 
 export default function DashboardPage() {
   const [data,setData] = useState(products.slice(0,5));
   const [exportData,setExportData] = useState(0);
+  const navigate = useNavigate();
 
   const { isLoading: productsFetchingStatus, isError: productsFetchingError, data: productCount } =  useQuery(
     { queryKey: ['productCount'], queryFn: countProduct }
@@ -35,7 +38,13 @@ export default function DashboardPage() {
     { queryKey: ['total'], queryFn: totalIncome }
   ) ;
 
+  
+  const { isLoading: leastStockProductsLoading, isError: leastStockProductsFetching, data: leastStockProducts } = useQuery(
+    { queryKey: ['leastStockProducts'], queryFn: getLeastStockProduct }
+  ) ;
 
+
+  console.log(leastStockProducts);
 
   const exportTodayIncome = async (e)=>{
     e.preventDefault();
@@ -140,25 +149,33 @@ export default function DashboardPage() {
                     <div className='w-full'>
                       <Perfomance />
                     </div>
-                    <div className='p-6 border rounded-lg shadow-lg w-full h-96'>
+                    <div className='p-6 border rounded-lg shadow-lg w-full '>
                       <p className='font-bold text-lg mb-3'>Item In Stock</p>
                         <header className='font-bold text-sm flex justify-between'>
                             <p className='w-12'>ID</p>
-                            <div className='w-48'>
-                              <p className='w-48'>Name</p>  
+                            <div className=' w-24 lg:w-48'>
+                              <p className=''>Name</p>  
                             </div>
-                            <p className='lg:w-48'>Quantiy</p>
+                            <p className='lg:w-24 text-center'>In Stock</p>
+                            <p className='lg:w-24 text-end'>State</p>
                         </header>
                         {
-                            data.map((item,i)=>(
+                          leastStockProducts ?
+                            leastStockProducts.map((item,i)=>(
                                 <div key={i} className='font-bold text-sm flex justify-between items-center my-5 border-t-2 pt-3'>
                                     <p className='w-12'>{i+1}</p>
-                                    <div className='w-48'>
+                                    <div className=' w-24 lg:w-48'>
                                     <p className='font-medium text-gray-600 line-clamp-1 truncate'>{item.name}</p>                      
                                     </div>
-                                    <p className='lg:w-48 font-medium text-gray-600 line-clamp-1 '>{item.cost}</p>
+                                    <p className='lg:w-24 font-medium text-gray-600 line-clamp-1 text-center'>{item.stock}</p>
+                                    <div className='lg:w-24 flex justify-end'>
+                                    <button onClick={()=>navigate(`/product/edit/${item.id}`)} className='font-medium text-xs py-1 rounded-full px-4 text-white bg-yellow-700 w-fit  my-1'>Edit</button>
+                                    </div>
                                 </div>
-                            ))
+                            )) :
+                            <div className='h-full w-full flex justify-center items-center'>
+                               <LoadingSkeleton />
+                            </div>
                         }
                     </div>  
                   </div>
