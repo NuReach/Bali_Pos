@@ -7,6 +7,10 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { updateToCart } from '../../api';
 
 
+function formatNumberWithCommas(number) {
+    return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  }
+
 export default function Cart() {
   const date = new Date();
   const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
@@ -15,6 +19,12 @@ export default function Cart() {
   const [discount, setDiscount] = useState("0");
   const [discountPrice,setDiscountPrice] = useState("");
   const [payment,setPayment] = useState("");
+  
+  const [currency,setCurrency] = useState("");
+  const [receive,setRecieve] = useState(0);
+  const rate = 4100;
+  const [change,setChange] = useState(0);
+  
 
   const navigate = useNavigate();
   
@@ -31,9 +41,6 @@ export default function Cart() {
   const user = JSON.parse(localStorage.getItem("user"));
  
 
-
-
-
   const handleInput = (e) => {
     if (e.target.value <0) {
         setDiscount(0);
@@ -48,8 +55,13 @@ export default function Cart() {
   useEffect(()=>{
     setSubTotal(parseFloat(cart.reduce((a,cartItem)=>a + cartItem.total,0)).toFixed(2));
     setTotal(parseFloat(subTotal*(100-discount)/100).toFixed(2));
-    setDiscountPrice(parseFloat(subTotal*(discount)/100).toFixed(2))
-  },[discount,cart,subTotal,total,discountPrice])
+    setDiscountPrice(parseFloat(subTotal*(discount)/100).toFixed(2));
+    if (currency == "riel") {
+    setChange(parseFloat((receive/rate-total)).toFixed(2));    
+    }else{
+    setChange(parseFloat(receive-total).toFixed(2));  
+    }
+  },[discount,cart,subTotal,total,discountPrice,receive,change])
 
   const handleDelete = (e,item)=>{
     e.preventDefault();
@@ -78,23 +90,20 @@ export default function Cart() {
     }
   })
 
-
-  console.log(updateToCartLoading);
-
-
   const handleSubmit = async (e)=>{
     e.preventDefault();
     if (payment == "") {
         alert("Please Select Payemt")
     }else{
         try {
-        await addToCartMutation({cart,discount,subTotal,total,payment,user}); 
+        await addToCartMutation({cart,discount,subTotal,total,payment,user,receive,currency}); 
         } catch (error) {
             console.log(error);
         }
     }
   }
 
+  console.log(change);
 
   return (
     <div className={showCartBoolean ? 'w-96 border-l shadow-lg p-3 gap-3 absolute right-0 bg-white lg:relative  lg:flex flex-col transition-opacity ' : 'min-w-96 w-96 border-l shadow-lg p-3 gap-3 absolute right-0  bg-white lg:relative hidden  lg:flex flex-col '} >
@@ -141,31 +150,7 @@ export default function Cart() {
                 }
             </div>
         </section>
-        <section className='mt-12 flex flex-col gap-3'>
-            <div className='flex justify-between'>
-                <p className='text-xs font-medium text-gray-500'>Subtotal</p>
-                <p className='text-sm font-medium text-gray-500'>USD ${subTotal}</p>
-            </div>
-            <div className='flex justify-between'>
-                <p className='text-xs font-medium text-gray-500'>Discount</p>
-                <div className='flex items-center'>
-                <input type="text" onChange={handleInput} value={discount} className='focus:ring-0 focus:border-none focus:outline-none w-6 text-sm text-end pr-1 font-medium text-gray-500' />
-                <span className='text-sm font-medium text-gray-500'>%</span>
-                </div>
-            </div>
-            {
-                discount > 0 && 
-                <div className='flex justify-between'>
-                <p className='text-xs font-medium text-gray-400'>Discount Price</p>
-                <p className='text-sm font-medium text-gray-400'>USD ${discountPrice}</p>
-            </div>
-            }
-            <div className='flex justify-between'>
-                <p className='text-sm font-medium text-black'>TOTAL</p>
-                <p className='text-sm font-medium text-black'>USD ${total}</p>
-            </div>
-        </section>
-        <section className='my-6 flex flex-col gap-3'>
+        <section className='flex flex-col gap-3'>
             <p className='text-lg font-bold'>Payment Method </p>
             <div className='flex gap-6'>
                 <button onClick={(e)=>setPayment("cash")}  className={payment == "cash" ?'rounded-lg bg-gray-200 border-2 border-yellow-700 w-24 h-14 flex flex-col justify-center items-center text-yellow-700' :'rounded-lg border-2 border-yellow-700 w-24 h-14 flex flex-col justify-center items-center text-yellow-700'}>
@@ -176,6 +161,77 @@ export default function Cart() {
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="32" viewBox="0 0 14 14"><g fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"><rect width="13" height="9.5" x=".5" y="2.25" rx="1"/><path d="M.5 5.75h13m-4 3.5H11"/></g></svg>
                     <p className='text-xs font-medium'>Debit</p>
                 </button>
+            </div>
+        </section>
+        <section className=' flex flex-col gap-3'>
+            <p className='text-lg font-bold'>Receive </p>
+            <div className='flex gap-6'>
+                <button onClick={(e)=>setCurrency("riel")}  className={currency == "riel" ?'rounded-lg bg-gray-200 border-2 border-yellow-700 w-24 h-14 flex flex-col justify-center items-center text-yellow-700' :'rounded-lg border-2 border-yellow-700 w-24 h-14 flex flex-col justify-center items-center text-yellow-700'}>
+                    <p className='text-xs font-medium'>Riel</p>
+                </button>
+                <button onClick={(e)=>setCurrency("usd")} className={currency == "usd" ?'rounded-lg bg-gray-200 border-2 border-yellow-700 w-24 h-14 flex flex-col justify-center items-center text-yellow-700' :'rounded-lg border-2 border-yellow-700 w-24 h-14 flex flex-col justify-center items-center text-yellow-700'}>
+                    <p className='text-xs font-medium'>USD</p>
+                </button>
+            </div>
+            {
+                currency != "" && currency == "riel" &&
+                <div>
+                    <label htmlFor="riel" className="block mb-2 text-sm font-medium text-gray-900 ">RIEl</label>
+                    <input required value={receive} onChange={(e)=>setRecieve(e.target.value)} type="number" id="receive" name="receive" autoComplete='off' className="block w-full p-2 text-gray-900 border-2 bg-white rounded-lg   " />
+                </div>
+            }
+            {
+                currency != "" && currency == "usd" &&
+                <div>
+                    <label htmlFor="usd" className="block mb-2 text-sm font-medium text-gray-900 ">USD</label>
+                    <input required value={receive} onChange={(e)=>setRecieve(e.target.value)} type="number" id="receive" name="receive" autoComplete='off' className="block w-full p-2 text-gray-900 border-2 bg-white rounded-lg   " />
+                </div>
+            }
+        </section>
+        
+        <section className='mt-3 flex flex-col gap-3'>
+            <div className='flex justify-between'>
+                <p className='text-xs font-medium text-gray-500'>Subtotal</p>
+                <p className='text-lg font-medium text-gray-500'>USD ${subTotal}</p>
+            </div>
+            <div className='flex justify-between'>
+                <p className='text-xs font-medium text-gray-500'>Discount</p>
+                <div className='flex items-center'>
+                <input type="text" onChange={handleInput} value={discount} className='focus:ring-0 focus:border-none focus:outline-none w-6 text-lg text-end pr-1 font-medium text-gray-500' />
+                <span className='text-lg font-medium text-gray-500'>%</span>
+                </div>
+            </div>
+            {
+                receive != 0 && receive > subTotal &&
+                <div className='flex justify-between'>
+                    <p className='text-xs font-medium text-gray-500'>Recieve</p>
+                    <p className='text-lg font-medium text-gray-500'>{currency == "riel" ? "KHR " : "USD $"}{formatNumberWithCommas(receive) }</p>
+                </div>
+            }
+            {
+                change > 0 &&
+                <div className='flex justify-between'>
+                    <p className='text-xs font-medium text-gray-500'>Change</p>
+                    <div className='flex flex-col justify-end'>
+                    <p className='text-lg font-medium text-gray-500 flex justify-end'>{currency == "riel" ? "KHR " + formatNumberWithCommas(change*rate) : "USD $" + change}</p>
+                    <p className='text-lg font-medium text-gray-500 flex justify-end'>{currency == "riel" ? "USD $" + change : "KHR " + formatNumberWithCommas(change*rate) }</p>
+                    </div>
+                </div>
+            }
+            
+            {
+                discount > 0 && 
+                <div className='flex justify-between'>
+                <p className='text-xs font-medium text-gray-400'>Discount Price</p>
+                <p className='text-lg font-medium text-gray-400'>-USD ${discountPrice} </p>
+            </div>
+            }
+            <div className='flex justify-between'>
+                <p className='text-lg font-medium text-black'>TOTAL</p>
+                <div className='flex flex-col justify-end'>
+                    <p className='text-lg font-medium text-gray-500 flex justify-end'>USD ${total}</p>
+                    <p className='text-lg font-medium text-gray-500 flex justify-end'>{"KHR "+formatNumberWithCommas(total*rate) }</p>
+                    </div>
             </div>
         </section>
         <section className='flex flex-col gap-3'>

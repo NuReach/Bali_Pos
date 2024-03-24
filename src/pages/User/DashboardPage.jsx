@@ -84,7 +84,7 @@ export default function DashboardPage() {
                         </div>
                       </section>
                       <section>
-                        <p className='text-2xl font-bold'>USD ${total?.toFixed(2)}</p>
+                        <p className='text-2xl font-bold'>USD ${ total ? total?.toFixed(2) : "..."}</p>
                       </section>
                       {/* <section>
                         <p className='text-xs text-gray-500'>Sale 23 Products</p>
@@ -99,7 +99,7 @@ export default function DashboardPage() {
                         </div>
                       </section>
                       <section>
-                        <p className='text-2xl font-bold'>USD ${todayIncome?.toFixed(2)}</p>
+                        <p className='text-2xl font-bold'>USD ${todayIncome ? todayIncome?.toFixed(2) : "..."}</p>
                       </section>
                       <section onClick={exportTodayIncome}>
                           <p className='text-xs font-bold text-gray-500 hover:text-gray-700 transition cursor-pointer'>Generate Data</p>
@@ -114,10 +114,10 @@ export default function DashboardPage() {
                         </div>
                       </section>
                       <section>
-                        <p className='text-2xl font-bold'>{orderCount} Sales</p>
+                        <p className='text-2xl font-bold'>{orderCount ? orderCount : "..."} Sales</p>
                       </section>
                       <section>
-                        <p className='text-xs text-gray-500 font-bold'>Today {orderTodayCount} Sales </p>
+                        <p className='text-xs text-gray-500 font-bold'>Today {orderTodayCount ? orderCount : "..."} Sales </p>
                       </section>
                     </div>
                     <div className='p-6 rounded-lg border shadow-lg flex flex-col gap-3 sm:w-72 w-full'>
@@ -129,10 +129,10 @@ export default function DashboardPage() {
                         </div>
                       </section>
                       <section>
-                        <p className='text-2xl font-bold'>{productCount} Prodcuts</p>
+                        <p className='text-2xl font-bold'>{productCount ? productCount : "..."} Prodcuts</p>
                       </section>
                       <section>
-                        <p className='text-xs text-gray-500 font-bold'>Total Category {categoryCount} </p>
+                        <p className='text-xs text-gray-500 font-bold'>Total Category {categoryCount ? productCount : "..."} </p>
                       </section>
                     </div>
                   </div>

@@ -45,7 +45,7 @@ export const fetchCategories = async () => {
 // cart update product stock and add to cart
 export const updateToCart = async (state) => {
   
-  const {cart,discount,subTotal,total,payment,user} = state;
+  const {cart,discount,subTotal,total,payment,user,receive,currency} = state;
 
   const id = uuidv4();
   const docRef = doc(db, "cart", id);
@@ -58,6 +58,8 @@ export const updateToCart = async (state) => {
       subTotal: parseFloat(subTotal),
       payment: payment,
       total: parseFloat(total),
+      receive : parseFloat(receive),
+      currency: currency,
       user: user.username,
       createdAt: Date.now()
     });
@@ -78,6 +80,8 @@ export const updateToCart = async (state) => {
       subTotal: parseFloat(subTotal),
       payment: payment,
       total: parseFloat(total),
+      receive : parseFloat(receive),
+      currency: currency,
       user: user.username,
       createdAt: Date.now()
     };
