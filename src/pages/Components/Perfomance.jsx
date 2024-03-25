@@ -10,6 +10,8 @@ import {
   Legend
 } from 'chart.js';
 import { Chart, Line } from 'react-chartjs-2';
+import { getMonthlyReport } from '../../api';
+import { useQuery } from '@tanstack/react-query';
 
 ChartJS.register(
   CategoryScale,
@@ -23,18 +25,30 @@ ChartJS.register(
 
 
 export default function Perfomance() {
-  const days = [
-    "1", "2", "3", "4", "5", "6", "7", "8", "9", "10",
-    "11", "12", "13", "14", "15", "16", "17", "18", "19", "20",
-    "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31"
-];
-const revenue = [3, 10, 20, 30, 40, 69, 33, 40, 20, 50, 80, 69, 30, 80, 60, 50, 40, 39, 33, 15, 80, 50, 20, 21, 30, 40, 30, 50, 120, 33];
+
+  const { isLoading: monthlyReportLoading, isError: monthlyReportFetching, data: monthlyReport } = useQuery(
+        { queryKey: ['monthlyReport'], 
+        queryFn: getMonthlyReport , 
+        staleTime : Infinity,
+        }
+    ) ;
+
+  console.log(monthlyReport);
+  const days=[];
+  const filterdays = monthlyReport?.map((item)=>{
+    days.push(new Date(item.start).getDay());
+  })
+  const revenue = [];
+  const filterRevenue = monthlyReport?.map((item)=>{
+    revenue.push(item.totalPrice);
+  });
+  
 
   const data = {
     labels: days,
     datasets: [
       {
-        label: 'This Month',
+        label: 'This Month Sale',
         data: revenue,
         fill: false,
         backgroundColor: 'rgb(75, 192, 192)',

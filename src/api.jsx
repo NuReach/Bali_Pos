@@ -396,3 +396,24 @@ export const createDayReport = async (state)=>{
     createdAt: Date.now(),
   });
 }
+
+//performance 
+
+export const getMonthlyReport = async ()=>{
+  const coll = collection(db, "reports");
+  const today = new Date();
+  today.setDate(1); // Set the date to the 1st of the current month
+  today.setHours(0, 0, 0, 0);
+  const startOfMonthTimestamp = today.getTime();
+
+  const nextMonth = new Date(today);
+  nextMonth.setMonth(today.getMonth() + 1); // Move to the start of the next month
+  const endOfMonthTimestamp = nextMonth.getTime();
+
+  const q = query(coll, where('createdAt', '>=', startOfMonthTimestamp), where('createdAt', '<', endOfMonthTimestamp));
+  const querySnapshot = await getDocs(q);
+  const data = querySnapshot.docs.map(doc => ({
+    ...doc.data()
+  }));
+  return data;;
+}
