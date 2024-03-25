@@ -16,6 +16,8 @@ import { toast } from 'sonner'
 import { ProtectedRoute } from '../src/ProtectedRoute'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import PDFPreview from './pages/User/PDFPreview'
+import Search from './pages/User/Search'
 
 function App() {
   const queryClient = new QueryClient();
@@ -36,6 +38,8 @@ function App() {
           <Route path="/user/edit/:id" element={<UserEditPage />} />
           <Route path="/history" element={<HistoryPage />} />
           <Route path="/history/detail/:id" element={<HistoryDetail />} />
+          <Route path="/PDFPreview" element={<PDFPreview />} />
+          <Route path="/search/:search" element={<Search />} />
         </Route>
         <Route path="/login" element={<Login />} />
       </Routes>

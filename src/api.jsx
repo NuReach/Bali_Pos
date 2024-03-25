@@ -9,7 +9,8 @@ export const fetchProducts = async (key) => {
     let q;
     if (key.length === 0) {
        return 0;
-    } else {
+    }
+    else {
        q = query(
         collection(db, "products"),
         orderBy("name", "asc"),
@@ -25,6 +26,24 @@ export const fetchProducts = async (key) => {
     
     return data;
   }
+  
+export const searchProduct = async (search) =>{
+  console.log(search);
+  const q = query(
+    collection(db, "products"),
+    orderBy("name", "asc"),
+    where("name", ">=", search.toLowerCase()),
+    where("name", "<=", search.toLowerCase() + "\uf8ff"),
+    limit(18)
+  );
+  const querySnapshot = await getDocs(q);
+  const data = querySnapshot.docs.map(doc => ({
+    ...doc.data()
+  }));
+  console.log(data);
+  
+  return data;
+}
   
 export const fetchCategories = async () => {
     const q = query(
@@ -303,6 +322,26 @@ export const getLeastStockProduct = async ()=>{
   
   return data;
 }  
+
+export const getTodayIncome = async ()=>{
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const todayTimestamp = today.getTime();
+
+
+  const tomorrow = new Date(today);
+  tomorrow.setDate(today.getDate() + 1);
+  const tomorrowTimestamp = tomorrow.getTime();
+
+  const now = Date.now();
+  const coll = collection(db, "cart");
+  const q = query(coll,where('createdAt',">=", todayTimestamp), where('createdAt',"<=", tomorrowTimestamp));
+  const snapShot = await getDocs(q);
+  const data = snapShot.docs.map(doc => ({
+    ...doc.data()
+  }));
+  return {data,todayTimestamp,tomorrowTimestamp};
+}
 
 // user 
 

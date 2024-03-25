@@ -1,3 +1,9 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+.a4Container {
+    width: 210mm; /* Set width to A4 paper width */
+    height: 297mm; /* Set height to A4 paper height */
+    margin: 0 auto; /* Center the container horizontally */
+    border: 1px solid #000; /* Optional: Add a border for visualization */
+  }

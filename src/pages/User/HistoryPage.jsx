@@ -54,8 +54,6 @@ export default function HistoryPage() {
      }
   );
   
-  console.log(historyPage);
-  console.log(orderCount);
 
   return (
     <div>

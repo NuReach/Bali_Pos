@@ -5,8 +5,8 @@ import Perfomance from '../Components/Perfomance'
 import products from '../products';
 import { db } from '../../firebase';
 import { toast } from 'sonner';
-import { useQuery } from '@tanstack/react-query';
-import { countCategory, countOrder, countProduct, countTodayIncome, countTodayOrder, getLeastStockProduct, totalIncome } from '../../api';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { countCategory, countOrder, countProduct, countTodayIncome, countTodayOrder, getLeastStockProduct, getTodayIncome, totalIncome } from '../../api';
 import LoadingSkeleton from '../Components/LoadingSkeleton';
 import { useNavigate } from 'react-router-dom';
 
@@ -44,34 +44,14 @@ export default function DashboardPage() {
   ) ;
 
 
-  console.log(leastStockProducts);
 
   const exportTodayIncome = async (e)=>{
-    e.preventDefault();
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const todayTimestamp = today.getTime();
-
-    const now = Date.now();
-
-    try {
-      toast.loading("Please wait for a moment")
-      const querySnapshot = await getDocs(collection(db, "cart"),where('createdAt','<=',now));
-      const data = querySnapshot.docs.map(doc => ({
-        ...doc.data()
-      }));
-      setExportData(data);
-      toast.success("Exported Succesffully");
-      printToPDF();
-      console.log(data);
-    } catch (error) {
-      toast.error("Cannot run the process")
-      console.log(console.error());
-    }finally{
+      navigate("/PDFPreview");
       toast.dismiss();
-    }
-
   }
+  
+
+  
   
   return (
     <div>
@@ -126,7 +106,7 @@ export default function DashboardPage() {
                         <p className='text-2xl font-bold'>{orderCount ? orderCount : "..."} Sales</p>
                       </section>
                       <section>
-                        <p className='text-xs text-gray-500 font-bold'>Today {orderTodayCount ? orderCount : "..."} Sales </p>
+                        <p className='text-xs text-gray-500 font-bold'>Today {orderTodayCount ? orderTodayCount : "..."} Sales </p>
                       </section>
                     </div>
                     <div className='p-6 rounded-lg border shadow-lg flex flex-col gap-3 sm:w-72 w-full'>
@@ -141,7 +121,7 @@ export default function DashboardPage() {
                         <p className='text-2xl font-bold'>{productCount ? productCount : "..."} Prodcuts</p>
                       </section>
                       <section>
-                        <p className='text-xs text-gray-500 font-bold'>Total Category {categoryCount ? productCount : "..."} </p>
+                        <p className='text-xs text-gray-500 font-bold'>Total Category {categoryCount ? categoryCount : "..."} </p>
                       </section>
                     </div>
                   </div>

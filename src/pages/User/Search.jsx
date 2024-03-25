@@ -6,11 +6,12 @@ import { addToCartReducer, filterMenu } from '../../functionSlice';
 import Sidebar from '../Components/Sidebar';
 import LoadingSkeleton from '../Components/LoadingSkeleton';
 import { useQuery } from '@tanstack/react-query';
-import { fetchCategories, fetchProducts } from '../../api';
+import { fetchCategories, fetchProducts, searchProduct } from '../../api';
+import { useParams } from 'react-router-dom';
 
 
 
-export default function Home() {
+export default function Search() {
   const dispatch = useDispatch();
 
   const cart = useSelector((state)=>state.function.cart);
@@ -19,24 +20,18 @@ export default function Home() {
 
   const filter = useSelector((state)=>state.function.filterMenuKey);
 
+  const {search} = useParams();
+
   
   const { isLoading : categoriesFetchingStatus, isError : categoriesFetchingError, data : categories } = useQuery(
     { queryKey: ['categories'],queryFn: ()=> fetchCategories() }
   )
 
-  useEffect(()=>{
-    if (categories != null && filter == "") {
-      setKey(categories[0]?.name);  
-      dispatch(filterMenu({key:categories[0]?.name}));
-    }else{
-      setKey(filter)
-    }
-  },[categories,filter])
-
-
-  const { isLoading : productsFetchingStatus, isError : productsFetchingError, data : products } = useQuery(
-    { queryKey: ['products',{key}] , queryFn: ()=>fetchProducts(key) }
+ const { isLoading : searchResultFetchingStatus, isError : searchResultFetchingError, data : products } = useQuery(
+    { queryKey: ['searchResult',{search}],queryFn: ()=> searchProduct(search) }
   )
+  
+  console.log(products);
 
 
   const addToCart = (e,item,stock)=>{
