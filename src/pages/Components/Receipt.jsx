@@ -43,7 +43,6 @@ export default function Receipt() {
     window.print();
     localStorage.removeItem("printData");
     dispatch(removeAllCartItem());
-    navigate("/");
   }
 
   

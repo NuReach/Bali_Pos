@@ -21,7 +21,6 @@ export default function Navbar() {
   const { isLoading : categoriesFetchingStatus, isError : categoriesFetchingError, data : categories } = useQuery(
     { queryKey: ['categories'], queryFn: ()=> fetchCategories() }
   )
-
   const dispatch = useDispatch();
 
   const showCart = (e)=>{
