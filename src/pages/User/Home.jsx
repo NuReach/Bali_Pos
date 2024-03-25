@@ -64,7 +64,7 @@ export default function Home() {
                       <div  onClick={(e)=>addToCart(e,item,item.stock)} key={i} className={ cart.find((x)=>x.item.id == item.id) ? 'p-2 border-2 flex flex-col border-yellow-700  rounded-lg w-32 h-56 gap-1 cursor-pointer' : 'p-2 border-2 flex flex-col  rounded-lg w-32 h-56 gap-1 cursor-pointer'}>
                         <img src={item.image} className='w-full h-24 rounded-lg object-cover' alt="" />
                         <div>
-                          <p className='font-medium text-sm line-clamp-2 h-11'>{item.name}</p>
+                          <p className='font-medium text-sm line-clamp-2 h-11 capitalize'>{item.name}</p>
                           <p className='font-medium text-xs text-gray-400 truncate '>{item.category}</p>
                           <p className={ item.stock < 10 ? 'text-xs text-red-600 font-bold truncate ' : 'font-medium text-xs text-gray-400 truncate ' }>Stock : {item.stock}</p>
                           <p className='font-medium text-sm text-yellow-700 truncate'>USD ${item.price}</p>

@@ -58,7 +58,7 @@ export default function PDFPreview() {
                         <p className='text-xs font-bold'>{new Date(exportTodayIncomes.tomorrowTimestamp).toLocaleDateString()+" "+new Date(exportTodayIncomes.tomorrowTimestamp).toLocaleTimeString()}</p>
                     </div>
                 </section>
-                <div>
+                <section>
                     {
                         exportTodayIncomes.data.map((item,i)=>(
                             <div className='flex justify-between gap-3 border-b p-3'>
@@ -72,7 +72,7 @@ export default function PDFPreview() {
                                     {
                                         item.cartItems.map((cartItem,i)=>(
                                         <section className='flex items-center gap-3 ' key={i}>
-                                            <p className='text-xs font-medium w-36  justify-between '>{(cartItem.item.name)}</p>
+                                            <p className='text-xs font-medium w-36  justify-between capitalize '>{(cartItem.item.name)}</p>
                                             <p className='text-xs font-medium w-24'>{(cartItem.item.price).toFixed(2)}$</p>
                                             <p className='text-xs font-medium w-24'>{cartItem.qty}X</p>
                                             <p className='text-xs font-medium w-24 justify-end flex'>{(cartItem.total).toFixed(2)}$</p>
@@ -94,14 +94,14 @@ export default function PDFPreview() {
                                             item.currency && item.receive &&
                                             <div className='flex mt-3' >
                                                 <p className='text-xs font-medium w-24 justify-end flex'>Receive :</p>
-                                                <p className='text-xs font-medium w-24 justify-end flex'>{ item.currency == "riel" ? (item?.receive).toFixed(2)+"KHM" : (item?.receive).toFixed(2)+"USD" }</p>
+                                                <p className='text-xs font-medium w-24 justify-end flex'>{ item.currency == "riel" ? ((item?.receive)).toLocaleString()+"៛" : (item?.receive).toFixed(2)+"USD" }</p>
                                             </div>
                                         }
                                         {
                                             item.currency && item.currency &&
                                             <div className='flex mt-3' >
                                                 <p className='text-xs font-medium w-24 justify-end flex'>Change :</p>
-                                                <p className='text-xs font-medium w-24 justify-end flex'>{ item.currency == "riel" ? (((item.receive/4100)-item.total)*4100).toFixed(2)+"KHM" : (item.receive-item.total).toFixed(2)+"USD" }</p>
+                                                <p className='text-xs font-medium w-24 justify-end flex'>{ item.currency == "riel" ? (((item.receive/4100)-item.total)*4100).toLocaleString()+"៛" : (item.receive-item.total).toFixed(2)+"USD" }</p>
                                             </div>
                                         }
                                         <div className='flex mt-3' >
@@ -117,8 +117,12 @@ export default function PDFPreview() {
                             </div>
                         ))
                     }
-                </div>
-                <div className='w-full flex flex-col p-3'>
+                </section>
+                <section className='w-full flex flex-col p-3'>
+                    <div className='flex mt-3' >
+                        <p className='text-sm font-medium w-24  flex'>Total Receipts :</p>
+                        <p className='text-sm font-medium w-40 justify-end flex'>{exportTodayIncomes.data.length} Receipt</p>
+                    </div>
                     <div className='flex mt-3' >
                         <p className='text-sm font-medium w-24  flex'>Total Items :</p>
                         <p className='text-sm font-medium w-40 justify-end flex'>{totalItem} Items</p>
@@ -129,9 +133,9 @@ export default function PDFPreview() {
                     </div>
                     <div className='flex mt-3' >
                         <p className='text-sm font-medium w-24  flex'>Total Price :</p>
-                        <p className='text-sm font-medium w-40 justify-end flex'>KHM ៛{(totalPrice.toFixed(2)*rate).toLocaleString()}</p>
+                        <p className='text-sm font-medium w-40 justify-end flex'>KHR ៛{(totalPrice.toFixed(2)*rate).toLocaleString()}</p>
                     </div>
-                </div>
+                </section>
             </div>
              :
             <div className='h-screen w-full flex justify-center items-center'>

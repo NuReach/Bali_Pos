@@ -126,7 +126,7 @@ export default function Cart() {
                     cart.length >0 ? cart.map((item,i)=>(
                         <div key={i} className='flex gap-2  items-center'>
                           
-                            <p className='w-24 truncate text-xs font-medium'>{item.item.name}</p>
+                            <p className='w-24 truncate text-xs font-medium capitalize'>{item.item.name}</p>
                             {
                                 item.qty>1 ? 
                                 <button onClick={(e)=>minusQty(e,item)} className=' w-6 h-6 rounded-lg bg-gray-300 text-white flex justify-center items-center'>
@@ -204,14 +204,14 @@ export default function Cart() {
                 receive != 0 && currency == "riel" && receive/rate >= total && 
                 <div className='flex justify-between'>
                     <p className='text-xs font-medium text-gray-500'>Recieve</p>
-                    <p className='text-sm font-medium text-gray-500'>{currency == "riel" ? "KHR " : "USD $"}{formatNumberWithCommas(receive) }</p>
+                    <p className='text-sm font-medium text-gray-500'>{currency == "riel" ? "KHR ៛" : "USD $"}{(receive).toLocaleString() }</p>
                 </div>
             }
             {
                 receive != 0 && currency == "usd" && receive >= total && 
                 <div className='flex justify-between'>
                     <p className='text-xs font-medium text-gray-500'>Recieve</p>
-                    <p className='text-sm font-medium text-gray-500'>{currency == "riel" ? "KHR " : "USD $"}{formatNumberWithCommas(receive) }</p>
+                    <p className='text-sm font-medium text-gray-500'>{currency == "riel" ? "KHR ៛" : "USD $"}{(receive).toLocaleString() }</p>
                 </div>
             }
             {
@@ -219,8 +219,8 @@ export default function Cart() {
                 <div className='flex justify-between'>
                     <p className='text-xs font-medium text-gray-500'>Change</p>
                     <div className='flex flex-col justify-end'>
-                    <p className='text-sm font-medium text-gray-500 flex justify-end'>{currency == "riel" ? "KHR " + formatNumberWithCommas(change*rate) : "USD $" + change}</p>
-                    <p className='text-sm font-medium text-gray-500 flex justify-end'>{currency == "riel" ? "USD $" + change : "KHR " + formatNumberWithCommas(change*rate) }</p>
+                    <p className='text-sm font-medium text-gray-500 flex justify-end'>{currency == "riel" ? "KHR ៛" + (change*rate).toLocaleString() : "USD $" + change}</p>
+                    <p className='text-sm font-medium text-gray-500 flex justify-end'>{currency == "riel" ? "USD $" + change : "៛" + (change*rate).toLocaleString() }</p>
                     </div>
                 </div>
             }
@@ -235,12 +235,12 @@ export default function Cart() {
             <div className='flex justify-between'>
                 <p className='text-sm font-medium text-black'>TOTAL</p>
                 <div className='flex flex-col justify-end'>
-                    <p className='text-sm font-medium text-gray-500 flex justify-end'>USD ${total}</p>
-                    <p className='text-sm font-medium text-gray-500 flex justify-end'>{"KHR "+formatNumberWithCommas(total*rate) }</p>
+                    <p className='text-sm font-bold text-black flex justify-end'>USD ${total}</p>
+                    <p className='text-sm font-bold text-black flex justify-end'>{"KHR ៛"+(total*rate).toLocaleString() }</p>
                     </div>
             </div>
         </section>
-        <section className='flex flex-col gap-3 mt-3'>
+        <section className='flex flex-col gap-3 mt-3 mb-9'>
             {/* <button disabled={cart.length == 0} onClick={createReciept}  className='w-full font-bold border-2 border-yellow-700 text-yellow-700 rounded-lg py-2 '>Reciept</button> */}
             <button disabled={cart?.length == 0 || updateToCartLoading==true} onClick={handleSubmit}  className='w-full font-bold text-white bg-yellow-700 rounded-lg py-2'>{updateToCartLoading ? "Loading..." : "Submit"}</button>
         </section>

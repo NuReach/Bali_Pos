@@ -86,11 +86,11 @@ export default function Receipt() {
                         <p className='text-xs font-medium w-24'>Quantity </p>
                         <p className='text-xs font-medium w-24 justify-end flex'>Total</p>
                     </section>
-                    <section className='flex flex-col gap-3 mt-3 border-b-2 border-t-2 py-3'>
+                    <section className='flex flex-col gap-3 mt-3  border-t-2 py-3'>
                         {
                             printData?.cartItems.map((cartItem,i)=>(
-                                <section className='flex' key={i}>
-                                    <p className='text-xs font-medium w-36  justify-between'>{(cartItem.item.name)}</p>
+                                <section className='flex items-center border-b pb-3 gap-1' key={i}>
+                                    <p className='text-xs font-medium w-36  justify-between capitalize'>{(cartItem.item.name)}</p>
                                     <p className='text-xs font-medium w-24'>{(cartItem.item.price).toFixed(2)}$</p>
                                     <p className='text-xs font-medium w-24'>{cartItem.qty}X</p>
                                     <p className='text-xs font-medium w-24 justify-end flex'>{(cartItem.total).toFixed(2)}$</p>
@@ -112,14 +112,14 @@ export default function Receipt() {
                                 printData.currency && printData.receive &&
                                 <div className='flex mt-3' >
                                     <p className='text-sm font-medium w-24 justify-end flex'>Receive :</p>
-                                    <p className='text-sm font-medium w-24 justify-end flex'>{ printData.currency == "riel" ? (printData?.receive).toFixed(2)+"KHM" : (printData?.receive).toFixed(2)+"USD" }</p>
+                                    <p className='text-sm font-medium w-24 justify-end flex'>{ printData.currency == "riel" ? (printData?.receive).toLocaleString()+"៛" : (printData?.receive).toFixed(2)+"USD" }</p>
                                 </div>
                             }
                             {
                                 printData.currency && printData.currency &&
                                 <div className='flex mt-3' >
                                     <p className='text-sm font-medium w-24 justify-end flex'>Change :</p>
-                                    <p className='text-sm font-medium w-24 justify-end flex'>{ printData.currency == "riel" ? (((printData.receive/4100)-printData.total)*4100).toFixed(2)+"KHM" : (printData.receive-printData.total).toFixed(2)+"USD" }</p>
+                                    <p className='text-sm font-medium w-24 justify-end flex'>{ printData.currency == "riel" ? (((printData.receive/4100)-printData.total)*4100).toLocaleString()+"៛" : (printData.receive-printData.total).toFixed(2)+"USD" }</p>
                                 </div>
                             }
                             <div className='flex mt-3' >
