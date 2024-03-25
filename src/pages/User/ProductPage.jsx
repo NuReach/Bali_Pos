@@ -109,8 +109,8 @@ export default function ProductPage() {
                     productsPage?.length >0 ? productsPage?.map((item,i)=>(
                         <div key={i} className='font-bold text-sm flex justify-between items-center my-6 border-b-2 pb-3'>
                             <p className='w-12'>{i+1}</p>
-                            <div className='lg:w-48'>
-                            <p className='font-medium text-gray-600 line-clamp-1 truncate'>{item.name}</p>
+                            <div className='lg:w-48 w-24'>
+                            <p className='font-medium text-gray-600 line-clamp-1 truncate '>{item.name}</p>
                             <p className='font-normal line-clamp-1 text-xs text-gray-500 mt-3'>Stock:{item.stock}</p>
                             </div>
                             <p className='w-12 font-medium text-gray-600 line-clamp-1  hidden lg:block'>{item.cost}</p>

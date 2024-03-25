@@ -90,7 +90,7 @@ export default function Receipt() {
                         {
                             printData?.cartItems.map((cartItem,i)=>(
                                 <section className='flex' key={i}>
-                                    <p className='text-xs font-medium w-36 truncate justify-between'>{(cartItem.item.name)}</p>
+                                    <p className='text-xs font-medium w-36  justify-between'>{(cartItem.item.name)}</p>
                                     <p className='text-xs font-medium w-24'>{(cartItem.item.price).toFixed(2)}$</p>
                                     <p className='text-xs font-medium w-24'>{cartItem.qty}X</p>
                                     <p className='text-xs font-medium w-24 justify-end flex'>{(cartItem.total).toFixed(2)}$</p>

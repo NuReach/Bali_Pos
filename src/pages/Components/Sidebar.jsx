@@ -34,7 +34,7 @@ export default function Sidebar({route}) {
   const showSidebarBoolean = useSelector((state)=>state.function.showSidebarBoolean);
 
   return (
-    <div className={showSidebarBoolean ?'  absolute  flex   bg-white md:relative md:flex flex-col gap-6  border-r min-h-screen shadow-md' :'  hidden bg-white md:relative md:flex flex-col gap-6 w-36 border-r min-h-screen shadow-lg'}>
+    <div className={showSidebarBoolean ?'  absolute  flex   bg-white md:relative md:flex flex-col gap-6  border-r min-h-screen shadow-md z-10' :'  hidden bg-white md:relative md:flex flex-col gap-6 w-36 border-r min-h-screen shadow-lg'}>
         <section className='flex flex-col gap-6 p-6'>
             {
                 pages.map((item,i)=>(

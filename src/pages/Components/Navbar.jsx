@@ -54,12 +54,12 @@ export default function Navbar() {
   
   return (
     <nav className='p-3 pl-9 flex justify-between items-center border-b relative'>
-        <section>
+        <section className='hidden md:block'>
             <img src="/logo.jpg" alt="" className='w-16 h-16' />
         </section>
         {
           categories ? 
-          <div className='md:flex justify-between items-center gap-9 p-3 hidden  '>
+          <div className='md:flex flex flex-wrap justify-between items-center gap-3 md:gap-9 p-3   '>
           {
             categories?.map((item,i)=>(
                 <div key={i}>
