@@ -1,9 +1,14 @@
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import React from 'react'
-import { getTodayIncome } from '../../api';
+import { createDayReport, getTodayIncome } from '../../api';
 import LoadingSkeleton from '../Components/LoadingSkeleton';
+import { toast } from 'sonner';
+import { useNavigate } from 'react-router-dom';
 
 export default function PDFPreview() {
+
+    const navigate = useNavigate();
+
     const { isLoading: exportTodayIncomesLoading, isError: exportTodayIncomesFetching, data: exportTodayIncomes } = useQuery(
         { queryKey: ['exportTodayIncomes'], 
         queryFn: getTodayIncome , 
@@ -32,6 +37,29 @@ export default function PDFPreview() {
     }
 
     getTotalItem();
+
+    const updateReportBtn = async ()=>{
+        if (exportTodayIncomes.data) {
+            await updateDayReportMutation({cartItems:exportTodayIncomes.data,totalItem:totalItem,totalPrice:totalPrice,start:exportTodayIncomes.todayTimestamp,end:exportTodayIncomes.tomorrowTimestamp})
+        }else{
+            toast.error("No Report To Update")
+        }
+    };
+
+    const { mutateAsync : updateDayReportMutation ,isPending : updateDayReportLoading } = useMutation({
+        mutationFn : createDayReport,
+        onSuccess : ()=>{
+            // setCategoryName("");
+            // queryClient.invalidateQueries(['productsPage']);
+            // queryClient.invalidateQueries(['categories']);
+            // queryClient.invalidateQueries(['product']);
+            toast.success("Report Updated Succesfully");
+            navigate("/");
+        },
+        onError : ()=>{
+            toast.error("error")
+        }
+      })
 
    
   return (
@@ -136,6 +164,9 @@ export default function PDFPreview() {
                         <p className='text-sm font-medium w-40 justify-end flex'>KHR ៛{(totalPrice.toFixed(2)*rate).toLocaleString()}</p>
                     </div>
                 </section>
+                <div className='mt-3'>
+                    <button onClick={updateReportBtn} disabled={updateDayReportLoading == true}  className='w-full font-bold text-white bg-yellow-700 rounded-lg py-2 print:hidden'>{updateDayReportLoading ? "Loading..." : "Submit"}</button>
+                </div>
             </div>
              :
             <div className='h-screen w-full flex justify-center items-center'>

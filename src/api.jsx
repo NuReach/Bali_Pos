@@ -88,14 +88,6 @@ export const updateToCart = async (state) => {
     
     await Promise.all(updateStockPromises);
 
-    const createCartItems = cart.map(async(cartItem) => {
-      const cartItemId = cartItem.id;
-      await setDoc(doc(db,"cartItems",cartItemId),{cartItem})
-    })
-
-    await Promise.all(createCartItems);
-
-
     const dataToStore = {
       id: id,
       cartItems: cart,
@@ -386,6 +378,21 @@ export const updateUser = async (state)=>{
     username: username,
     role : role,
     password : password,
+    createdAt: Date.now(),
+  });
+}
+
+export const createDayReport = async (state)=>{
+  console.log(state);
+  const { cartItems,totalItem,totalPrice,start,end } = state;
+  const id = uuidv4();
+  await setDoc(doc(db, "reports", id), {
+    id: id,
+    cartItems:cartItems,
+    totalItem,
+    totalPrice,
+    start,
+    end,
     createdAt: Date.now(),
   });
 }
